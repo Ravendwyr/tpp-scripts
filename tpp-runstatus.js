@@ -22,6 +22,13 @@ function getDateString() {
 // gather the goods
 function downloadRunStatus() {
     https.get(url, (response) => {
+//      printMessage(`statusCode: ${response.statusCode}`)
+
+        if (response.statusCode === 404) {
+            printMessage(`Server returned Error ${response.statusCode}. No run data currently available.`)
+            return
+        }
+
         let body = ""
 
         response.on("data", (chunk) => {
