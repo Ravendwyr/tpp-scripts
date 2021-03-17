@@ -22,7 +22,7 @@ These scripts have been built and tested with [Node 12.20.1](https://nodejs.org/
 
 Originally designed as a moderation aid, this script uses [tmi.js](https://www.npmjs.com/package/tmi.js) and [node-twitch](https://www.npmjs.com/package/node-twitch) to query the Twitch API to download and save the userdata and profile pictures of ~~almost~~ everyone in the chosen channel's chat room.
 
-User data is saved to `user_data/<username>.json` while their profile pictures are saved to `user_avatars/<username>-<timestamp>.png`.  Saving user data is disabled by default but can be easily enabled by removing the comment blocks surrounding the code.
+User data is saved to `user_data/<username>.json` while their profile pictures are saved to `user_avatars/<username>-<filehash>.png`.  Saving user data is disabled by default but can be easily enabled by removing the comment blocks surrounding the code.
 
 This tool requires an [OAuth token](https://twitchapps.com/tmi/) as well as a Client ID and Secret Key from a [Twitch App](https://dev.twitch.tv/console) in order to work.  These keys need to be stored in the provided `.env` file prior to launching the script.
 
