@@ -41,6 +41,11 @@ build/Release
 node_modules/
 jspm_packages/
 
+# Output directories
+run_status/
+user_avatars/
+user_data/
+
 # TypeScript v1 declaration files
 typings/
 
