@@ -12,7 +12,7 @@
   "dependencies": {
     "dotenv": "8.2.0",
     "node-fetch": "2.6.1",
-    "node-twitch": "0.4.1",
-    "tmi.js": "1.7.1"
+    "node-twitch": "0.4.3",
+    "tmi.js": "1.7.5"
   }
 }
