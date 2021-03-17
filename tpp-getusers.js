@@ -4,6 +4,7 @@ require('dotenv').config({ path: './.env' })
 
 const TwitchApi = require("node-twitch").default
 const fetch = require('node-fetch')
+const imghash = require("imghash")
 const tmi = require('tmi.js')
 const fs = require('fs')
 
@@ -19,20 +20,6 @@ const twitch = new TwitchApi({
     client_id:     process.env.TWITCH_CLIENTID,
     client_secret: process.env.TWITCH_CLIENTSECRET,
 })
-
-// check the time
-function getDateString() {
-    const date   = new Date()
-
-    const year   =    date.getFullYear()
-    const month  = `${date.getMonth() + 1}`.padStart(2, '0')
-    const day    = `${date.getDate()}`.padStart(2, '0')
-    const hour   = `${date.getHours()}`.padStart(2, '0')
-    const minute = `${date.getMinutes()}`.padStart(2, '0')
-    const second = `${date.getSeconds()}`.padStart(2, '0')
-
-    return `${year}${month}${day}-${hour}${minute}${second}`
-}
 
 // gather the goods
 async function getUserData(userName) {
@@ -55,11 +42,13 @@ async function getUserData(userName) {
         fs.mkdirSync("user_avatars")
     }
 
-    let pfpFileName = `user_avatars/${userName}-${getDateString()}.png`
     const response = await fetch(user.profile_image_url)
     const buffer = await response.buffer()
 
-    fs.writeFile(pfpFileName, buffer, (err) => { if (err) { throw err } })
+    imghash.hash(buffer, 16).then((hash) => {
+        let pfpFileName = `user_avatars/${userName}-${hash}.png`
+        fs.writeFile(pfpFileName, buffer, (err) => { if (err) { throw err } })
+    })
     //
 }
 
