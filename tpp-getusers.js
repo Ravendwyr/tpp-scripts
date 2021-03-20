@@ -45,10 +45,9 @@ async function getUserData(userName) {
     const response = await fetch(user.profile_image_url)
     const buffer = await response.buffer()
 
-    imghash.hash(buffer, 16).then((hash) => {
-        let pfpFileName = `user_avatars/${userName}-${hash}.png`
-        fs.writeFile(pfpFileName, buffer, (err) => { if (err) { throw err } })
-    })
+    imghash.hash(buffer, 16)
+        .then(hash => fs.writeFile(`user_avatars/${userName}-${hash}.png`, buffer, err => { if (err) { throw err } }))
+        .catch(err => { printMessage(`Invalid file detected for "${userName}". Skipping...`); return; })
     //
 }
 
