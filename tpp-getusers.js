@@ -38,6 +38,11 @@ async function getUserData(userName) {
     /*/
 
     // download the user's profile pic
+    if (!user || !user.profile_image_url) {
+        printMessage(`Faulty Twitch data detected for "${userName}". Skipping...`)
+        return
+    }
+
     if (!fs.existsSync("user_avatars")) {
         fs.mkdirSync("user_avatars")
     }
@@ -47,7 +52,7 @@ async function getUserData(userName) {
 
     imghash.hash(buffer, 16)
         .then(hash => fs.writeFile(`user_avatars/${userName}-${hash}.png`, buffer, err => { if (err) { throw err } }))
-        .catch(err => { printMessage(`Invalid file detected for "${userName}". Skipping...`); return; })
+        .catch(err => { printMessage(`Invalid profile pic detected for "${userName}". Skipping...`); return; })
     //
 }
 
