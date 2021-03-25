@@ -23,7 +23,7 @@ const twitch = new TwitchApi({
 
 // gather the goods
 async function getUserData(userName) {
-    const users = await twitch.getUsers(userName)
+    const users = await twitch.getUsers(userName).catch(err => { printMessage(`No Twitch data available for "${userName}". Skipping...`); return; })
     const user = users.data[0]
 
     /*/ download the user's data
@@ -39,7 +39,7 @@ async function getUserData(userName) {
 
     // download the user's profile pic
     if (!user || !user.profile_image_url) {
-        printMessage(`Faulty Twitch data detected for "${userName}". Skipping...`)
+        printMessage(`Undefined JSON detected for "${userName}". Skipping...`)
         return
     }
 
@@ -52,7 +52,7 @@ async function getUserData(userName) {
 
     imghash.hash(buffer, 16)
         .then(hash => fs.writeFile(`user_avatars/${userName}-${hash}.png`, buffer, err => { if (err) { throw err } }))
-        .catch(err => { printMessage(`Invalid profile pic detected for "${userName}". Skipping...`); return; })
+        .catch(err => { printMessage(`Error 403 detected for "${userName}". Skipping...`); return; })
     //
 }
 
