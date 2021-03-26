@@ -24,7 +24,6 @@ const twitch = new TwitchApi({
 // gather the goods
 async function getUserData(userName) {
     const users = await twitch.getUsers(userName).catch(err => { printMessage(`No Twitch data available for "${userName}". Skipping...`); return; })
-    const user = users.data[0]
 
     /*/ download the user's data
     if (!fs.existsSync("user_data")) {
@@ -32,10 +31,17 @@ async function getUserData(userName) {
     }
 
     let userFileName = `user_data/${userName}.json`
-    let data = JSON.stringify(user, null, 4)
+    let data = JSON.stringify(users, null, 4)
 
     fs.writeFile(userFileName, data, (err) => { if (err) { throw err } })
     /*/
+
+    if (!users || !users.data) {
+        printMessage(`Error 400 returned for "${userName}". Skipping...`)
+        return
+    }
+
+    const user = users.data[0]
 
     // download the user's profile pic
     if (!user || !user.profile_image_url) {
@@ -52,7 +58,7 @@ async function getUserData(userName) {
 
     imghash.hash(buffer, 16)
         .then(hash => fs.writeFile(`user_avatars/${userName}-${hash}.png`, buffer, err => { if (err) { throw err } }))
-        .catch(err => { printMessage(`Error 403 detected for "${userName}". Skipping...`); return; })
+        .catch(err => { printMessage(`Error 403 returned for "${userName}". Skipping...`); return; })
     //
 }
 
