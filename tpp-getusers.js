@@ -99,7 +99,7 @@ function onNamesHandler(target, names) {
     printMessage("NAMES " + names)
 
     names.forEach((name, i) => {
-        setTimeout(() => { getUserData(name) }, i * 100)
+        setTimeout(() => { getUserData(name) }, i * 500)
     })
 }
 
