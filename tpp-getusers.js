@@ -30,10 +30,7 @@ async function getUserData(userName) {
         fs.mkdirSync("user_data")
     }
 
-    let userFileName = `user_data/${userName}.json`
-    let data = JSON.stringify(users, null, 4)
-
-    fs.writeFile(userFileName, data, (err) => { if (err) { throw err } })
+    fs.writeFile(`user_data/${userName}.json`, JSON.stringify(users, null, 4), (err) => { if (err) { throw err } })
     /*/
 
     if (!users || !users.data) {
@@ -43,12 +40,12 @@ async function getUserData(userName) {
 
     const user = users.data[0]
 
-    // download the user's profile pic
     if (!user || !user.profile_image_url) {
         printMessage(`Undefined JSON detected for "${userName}". Skipping...`)
         return
     }
 
+    // download the user's profile pic
     if (!fs.existsSync("user_avatars")) {
         fs.mkdirSync("user_avatars")
     }
