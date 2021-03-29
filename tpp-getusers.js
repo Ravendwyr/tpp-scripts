@@ -89,6 +89,14 @@ function onJoinHandler(target, username, isSelf) {
     getUserData(username)
 }
 
+// called every time TMI detects a user leaving chat
+function onPartHandler(target, username, isSelf) {
+    if (username === "tpp" || username === "tppsimulator") { return }
+
+    printMessage("PART " + username)
+    getUserData(username)
+}
+
 // called shortly after connecting
 function onNamesHandler(target, names) {
     printMessage("NAMES " + names)
@@ -100,6 +108,7 @@ function onNamesHandler(target, names) {
 
 // engage
 client.on('join', onJoinHandler)
+client.on('part', onPartHandler)
 client.on('names', onNamesHandler)
 client.on('message', onMessageHandler)
 client.on('connected', onConnectedHandler)
