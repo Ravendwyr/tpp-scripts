@@ -43,6 +43,7 @@ jspm_packages/
 
 # Output directories
 run_status/
+dummy_avatars/
 user_avatars/
 user_data/
 
