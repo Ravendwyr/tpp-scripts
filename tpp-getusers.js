@@ -23,7 +23,7 @@ const twitch = new TwitchApi({
 
 // gather the goods
 async function getUserData(userName) {
-    const users = await twitch.getUsers(userName).catch(err => { printMessage(`No Twitch data available for "${userName}". Skipping...`) })
+    const users = await twitch.getUsers(userName).catch(err => {})
 
     /*/ download the user's data
     if (!fs.existsSync("user_data")) {
@@ -50,7 +50,13 @@ async function getUserData(userName) {
         fs.mkdirSync("user_avatars")
     }
 
-    const response = await fetch(user.profile_image_url)
+    const response = await fetch(user.profile_image_url).catch(err => {})
+
+    if (!response || !response.buffer) {
+        printMessage(`Socket hang-up while fetching "${userName}". Skipping...`)
+        return
+    }
+
     const buffer = await response.buffer()
 
     imghash.hash(buffer, 16)
