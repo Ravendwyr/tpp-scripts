@@ -1,9 +1,7 @@
 
 // define configuration options
-const https = require('https')
+const fetch = require('node-fetch')
 const fs = require('fs')
-
-let url = "https://twitchplayspokemon.tv/api/run_status"
 
 // check the time
 function getDateString() {
@@ -21,23 +19,9 @@ function getDateString() {
 
 // gather the goods
 function downloadRunStatus() {
-    https.get(url, (response) => {
-//      printMessage(`statusCode: ${response.statusCode}`)
-
-        if (response.statusCode === 404) {
-            printMessage(`Server returned Error ${response.statusCode}. No run data currently available.`)
-            return
-        }
-
-        let body = ""
-
-        response.on("data", (chunk) => {
-            body += chunk
-        })
-
-        response.on("end", () => {
-            try {
-                let json = JSON.parse(body)
+    fetch("https://twitchplayspokemon.tv/api/run_status")
+        .then(response => response.json())
+        .then(json => {
                 let data = JSON.stringify(json, null, 4)
 
                 if (!fs.existsSync("run_status")) {
@@ -51,15 +35,11 @@ function downloadRunStatus() {
                     if (err) { throw err }
 
                     printMessage(`run status saved to '${fileName}'`)
-//                  printMessage(`ratelimit remaining ${response.headers["x-ratelimit-remaining"]}, ratelimit resets at ${response.headers["x-ratelimit-reset"]}`)
                 })
-            } catch (error) {
-                console.error(error.message)
-            }
         })
-    }).on("error", (error) => {
-        console.error(error.message)
-    })
+        .catch(err => {
+            printMessage(err)
+        })
 }
 
 // our pretty printer
