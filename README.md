@@ -14,7 +14,7 @@ Then make sure the necessary libraries are installed.
     $ cd tpp-scripts
     $ npm install
 
-These scripts have been built and tested with [Node 12.20.1](https://nodejs.org/dist/latest-v12.x/), however other versions may still work.
+These scripts have been built and tested with [Node 12](https://nodejs.org/dist/latest-v12.x/), however other versions may still work.
 
 ***
 
