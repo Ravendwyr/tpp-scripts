@@ -23,7 +23,7 @@ const twitch = new TwitchApi({
 
 // gather the goods
 async function getUserData(userName) {
-    const users = await twitch.getUsers(userName).catch(err => {})
+    const users = await twitch.getUsers(userName).catch(err => { printMessage(err) })
 
     /*/ download the user's data
     if (!fs.existsSync("user_data")) {
@@ -90,39 +90,27 @@ function printMessage(message) {
     console.log(`[${ts}] ${message}`)
 }
 
-// called every time the script connects to Twitch chat
+// event handlers
 function onConnectedHandler(address, port) {
     printMessage(`Connected to ${address}:${port}`)
 }
 
-// called every time a message comes in
 function onMessageHandler(target, context, message, isSelf) {
     if (context.username === "tpp" || context.username === "tppsimulator") { return }
-
-    printMessage("MESSAGE " + context.username)
     getUserData(context.username)
 }
 
-// called every time TMI detects a new user in chat
 function onJoinHandler(target, username, isSelf) {
     if (username === "tpp" || username === "tppsimulator") { return }
-
-    printMessage("JOIN " + username)
     getUserData(username)
 }
 
-// called every time TMI detects a user leaving chat
 function onPartHandler(target, username, isSelf) {
     if (username === "tpp" || username === "tppsimulator") { return }
-
-    printMessage("PART " + username)
     getUserData(username)
 }
 
-// called shortly after connecting
 function onNamesHandler(target, names) {
-    printMessage("NAMES " + names)
-
     names.forEach((name, i) => {
         setTimeout(() => { getUserData(name) }, i * 500)
     })
