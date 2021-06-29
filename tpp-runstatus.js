@@ -50,4 +50,4 @@ function printMessage(message) {
 
 // engage
 downloadRunStatus()
-setInterval(downloadRunStatus, 15000)
+setInterval(downloadRunStatus, 20000)

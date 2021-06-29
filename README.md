@@ -36,6 +36,6 @@ The script checks the APIs on inital boot as well as when a new message comes in
 
 This queries the TwitchPlaysPokemon API for any active runs and saves the current run status to `run_status/<run>-<timestamp>.json`.  If no run is active or if the API returns an error, the results are saved as `run_status/unspecified-<timestamp>.json` instead.  If the server itself returns an error (e.g. 404 Page Not Found) then no file will be saved.
 
-The script checks the API once every 15 seconds and doesn't stop until terminated.
+The script checks the API once every 20 seconds and doesn't stop until terminated.
 
     $ node tpp-runstatus.js
