@@ -19,7 +19,7 @@ function getDateString() {
 
 // gather the goods
 function downloadRunStatus() {
-    fetch("https://twitchplayspokemon.tv/api/run_status")
+    fetch("https://twitchplayspokemon.tv/api/run_status", { method: "GET", headers: { 'User-Agent': "github.com/ravendwyr", 'OAuth-Token': process.env.TWITCH_OAUTH } })
         .then(response => response.json())
         .then(json => {
                 let data = JSON.stringify(json, null, 4)
