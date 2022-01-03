@@ -20,19 +20,13 @@ var botList  = []
 fs.readFile("botcheck-safe.txt", 'utf8', (err, data) => {
     if (err) throw err
 
-    let list = data.replace(/\r\n/g, ' ').split(' ')
-    list.forEach(row => {
-        safeList.push(row)
-    })
+    data.split(/\r\n/g).forEach(row => safeList.push(row))
 })
 
 fs.readFile("botcheck-marked.txt", 'utf8', (err, data) => {
     if (err) throw err
 
-    let list = data.replace(/\r\n/g, ' ').split(' ')
-    list.forEach(row => {
-        notified.push(row)
-    })
+    data.split(/\r\n/g).forEach(row => notified.push(row))
 })
 
 function fetchFromTwitchInsights() {
@@ -40,19 +34,14 @@ function fetchFromTwitchInsights() {
     .then(page => page.json())
     .then(data => {
         data["bots"].forEach(row => {
-            if (!botList.includes(row[0])) {
-                botList.push(row[0])
-            } /*/ else {
-                printMessage(`skipping ${row[0]}`)
-            } /*/
+            var name = row[0].trim()
+            if (!botList.includes(name)) botList.push(name)
         })
 
         printMessage("Finished downloading from TwitchInsights.")
         client.connect()
     })
-    .catch(err => {
-        printMessage(`Error while downloading from TwitchInsights -- ${err}`)
-    })
+    .catch(err => printMessage(`Error while downloading from TwitchInsights -- ${err}`))
 }
 
 function fetchFromTwitchBotsInfo(url) {
@@ -60,7 +49,8 @@ function fetchFromTwitchBotsInfo(url) {
     .then(page => page.json())
     .then(data => {
         data["bots"].forEach(row => {
-            botList.push(row.username)
+            var name = row.username.trim()
+            if (!botList.includes(name)) botList.push(name)
         })
 
         if (data["_links"].next != null) {
@@ -70,9 +60,7 @@ function fetchFromTwitchBotsInfo(url) {
             fetchFromTwitchInsights()
         }
     })
-    .catch(err => {
-        printMessage(`Error while downloading from TwitchBotsInfo -- ${err}`)
-    })
+    .catch(err => printMessage(`Error while downloading from TwitchBotsInfo -- ${err}`))
 }
 
 // gather the goods
@@ -97,8 +85,7 @@ async function checkMessage(username) {
 
 // our pretty printer
 function printMessage(message) {
-    const ts = new Date().toLocaleTimeString()
-    console.log(`[${ts}] ${message}`)
+    console.log(new Date().toLocaleTimeString(), message)
 }
 
 // event handlers
