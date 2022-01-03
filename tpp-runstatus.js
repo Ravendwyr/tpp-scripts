@@ -19,33 +19,28 @@ function getDateString() {
 
 // gather the goods
 function downloadRunStatus() {
-    fetch("https://twitchplayspokemon.tv/api/run_status", { method: "GET", headers: { 'User-Agent': "github.com/ravendwyr", 'OAuth-Token': process.env.TWITCH_OAUTH } })
-        .then(response => response.json())
-        .then(json => {
-                let data = JSON.stringify(json, null, 4)
+    fetch("https://twitchplayspokemon.tv/api/run_status", { method: "GET", headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr', 'OAuth-Token': process.env.TWITCH_OAUTH } })
+    .then(page => page.json())
+    .then(json => {
+        let data = JSON.stringify(json, null, 4)
 
-                if (!fs.existsSync("run_status")) {
-                    fs.mkdirSync("run_status")
-                }
+        if (!fs.existsSync("run_status")) fs.mkdirSync("run_status")
 
-                // 'json["game"]' defaults to 'undefined' if the API returns an error or is unavailable
-                let fileName = `run_status/${getDateString()}-${json["game"]}.json`
+        // 'json["game"]' defaults to 'undefined' if the API returns an error or is unavailable
+        let fileName = `run_status/${getDateString()}-${json["game"]}.json`
 
-                fs.writeFile(fileName, data, (err) => {
-                    if (err) { throw err }
+        fs.writeFile(fileName, data, (err) => {
+            if (err) throw err
 
-                    printMessage(`run status saved to '${fileName}'`)
-                })
+            printMessage(`run status saved to '${fileName}'`)
         })
-        .catch(err => {
-            printMessage(err)
-        })
+    })
+    .catch(err => printMessage(err))
 }
 
 // our pretty printer
 function printMessage(message) {
-    const ts = new Date().toLocaleTimeString()
-    console.log(`[${ts}] ${message}`)
+    console.log(new Date().toLocaleTimeString(), message)
 }
 
 // engage
