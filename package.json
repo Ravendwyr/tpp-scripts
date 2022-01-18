@@ -10,7 +10,7 @@
   "homepage": "https://github.com/Ravendwyr/tpp-scripts#readme",
   "private": true,
   "dependencies": {
-    "dotenv": "14.0.0",
+    "dotenv": "14.2.0",
     "imghash": "0.0.9",
     "node-fetch": "2.6.7",
     "node-twitch": "0.4.5",
