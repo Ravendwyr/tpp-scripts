@@ -31,10 +31,10 @@ fs.readFile("botcheck-marked.txt", 'utf8', (err, data) => {
 
 function fetchFromTwitchInsights() {
     fetch(`https://api.twitchinsights.net/v1/bots/all`, { method: 'GET', headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
-    .then(page => page.json())
+    .then(data => data.json())
     .then(data => {
         data["bots"].forEach(row => {
-            var name = row[0].trim()
+            var name = row[0].toLowerCase().trim()
             if (!botList.includes(name)) botList.push(name)
         })
 
@@ -46,10 +46,10 @@ function fetchFromTwitchInsights() {
 
 function fetchFromTwitchBotsInfo(url) {
     fetch(url, { method: 'GET', headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
-    .then(page => page.json())
+    .then(data => data.json())
     .then(data => {
         data["bots"].forEach(row => {
-            var name = row.username.trim()
+            var name = row.username.toLowerCase().trim()
             if (!botList.includes(name)) botList.push(name)
         })
 
@@ -70,7 +70,6 @@ async function checkUser(name, reason) {
     if (botList.includes(name)) {
         notified.push(name)
         printMessage(`"${name}" detected ${reason}. Please verify before marking.`)
-        return
     }
 }
 
@@ -79,7 +78,6 @@ async function checkMessage(username) {
 
     if (botList.includes(username)) {
         printMessage(`"${username}" is in the bot list but they just sent a message in chat. This is likely a false positive.`)
-        return
     }
 }
 
@@ -91,7 +89,7 @@ function printMessage(message) {
 // event handlers
 function onConnectedHandler(address, port) {
     printMessage(`Connected to ${address}:${port}`)
-    printMessage(`There are ${botList.length} bot accounts in the list.`)
+    printMessage(`There are ${botList.length} names in the list.`)
 }
 
 function onMessageHandler(channel, userdata, message, self) {
