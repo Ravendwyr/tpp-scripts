@@ -29,6 +29,21 @@ fs.readFile("botcheck-marked.txt", 'utf8', (err, data) => {
     data.split(/\r\n/g).forEach(row => notified.push(row))
 })
 
+function fetchFromBotsList() {
+    fetch(`https://raw.githubusercontent.com/Ravendwyr/bot-list/main/bot-list.txt`)
+    .then(data => data.text())
+    .then(data => {
+        data.split(/\n/).forEach(row => {
+            var name = row.toLowerCase().trim()
+            if (!botList.includes(name)) botList.push(name)
+        })
+
+        printMessage("Finished downloading community bot list.")
+        client.connect()
+    })
+    .catch(err => printMessage(`Error while downloading community bot list -- ${err}`))
+}
+
 function fetchFromTwitchInsights() {
     fetch(`https://api.twitchinsights.net/v1/bots/all`, { method: 'GET', headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
     .then(data => data.json())
@@ -39,7 +54,7 @@ function fetchFromTwitchInsights() {
         })
 
         printMessage("Finished downloading from TwitchInsights.")
-        client.connect()
+        fetchFromBotsList()
     })
     .catch(err => printMessage(`Error while downloading from TwitchInsights -- ${err}`))
 }
