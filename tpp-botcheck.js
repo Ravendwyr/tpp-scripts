@@ -100,10 +100,6 @@ function onJoinHandler(channel, name, self) {
     checkUser(name, "joining chat")
 }
 
-function onPartHandler(channel, name, self) {
-    checkUser(name, "leaving chat")
-}
-
 function onNamesHandler(channel, names) {
     names.forEach((name, i) => {
         setTimeout(() => checkUser(name, "during startup"), i * 250)
@@ -115,7 +111,6 @@ printMessage("Downloading bot lists. This usually takes around 30 seconds to 3 m
 fetchFromTwitchBotsInfo("https://api.twitchbots.info/v2/bot")
 
 client.on('join', onJoinHandler)
-client.on('part', onPartHandler)
 client.on('names', onNamesHandler)
 client.on('message', onMessageHandler)
 client.on('connected', onConnectedHandler)
