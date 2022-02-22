@@ -34,6 +34,19 @@ The script checks the names on inital boot, when a new message comes in, or when
 
 ***
 
+## tpp-inputcheck.js
+
+This quick and dirty script uses [tmi.js](https://www.npmjs.com/package/tmi.js) to connect to a channel and keeps track of how much time has passed between a user's messages.  By default the script monitors every user in chat but when names are included as arguments the script will only focus on the provided names.
+
+This tool requires an [OAuth token](https://twitchapps.com/tmi/) (excluding the `oauth:` part).  This key needs to be stored in the provided `.env` file prior to launching the script.
+
+The script checks every new message comes in and doesn't stop until terminated.
+
+    $ node tpp-inputcheck
+    $ node tpp-inputcheck name1 name2 name3 ...
+
+***
+
 ## tpp-getusers.js
 
 Originally designed as a moderation aid, this script uses [tmi.js](https://www.npmjs.com/package/tmi.js) and [node-twitch](https://www.npmjs.com/package/node-twitch) to query the Twitch API to download and save the userdata and profile pictures of ~~almost~~ everyone in the chosen channel's chat room.
