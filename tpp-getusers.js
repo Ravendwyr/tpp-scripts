@@ -3,7 +3,7 @@
 require('dotenv').config({ path: './.env' })
 
 const TwitchApi = require("node-twitch").default
-const fetch = require('node-fetch')
+const fetch = require('node-fetch-retry')
 const imghash = require("imghash")
 const tmi = require('tmi.js')
 const fs = require('fs')
@@ -44,7 +44,7 @@ async function getUserData(name) {
     // download the user's profile pic
     if (!fs.existsSync("user_avatars")) fs.mkdirSync("user_avatars")
 
-    const response = await fetch(user.profile_image_url).catch(err => {})
+    const response = await fetch(user.profile_image_url, { method: 'GET', retry: 3, pause: 1000, callback: retry => { printMessage(`Retrying ${name}'s profile pic...`) }}).catch(err => {})
 
     if (!response || !response.buffer) {
         printMessage(`Socket hang-up while fetching "${name}". Skipping...`)

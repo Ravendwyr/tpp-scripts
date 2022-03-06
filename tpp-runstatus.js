@@ -1,6 +1,6 @@
 
 // define configuration options
-const fetch = require('node-fetch')
+const fetch = require('node-fetch-retry')
 const fs = require('fs')
 
 // check the time
@@ -19,7 +19,7 @@ function getDateString() {
 
 // gather the goods
 function downloadRunStatus() {
-    fetch("https://twitchplayspokemon.tv/api/run_status", { method: "GET", headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr', 'OAuth-Token': process.env.TWITCH_OAUTH } })
+    fetch("https://twitchplayspokemon.tv/api/run_status", { method: "GET", retry: 3, pause: 1000, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr', 'Client-ID': process.env.TWITCH_CLIENTID, 'OAuth-Token': process.env.TWITCH_OAUTH } })
     .then(page => page.json())
     .then(json => {
         let data = JSON.stringify(json, null, 4)

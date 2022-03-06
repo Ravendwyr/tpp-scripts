@@ -2,7 +2,7 @@
 // define configuration options
 require('dotenv').config({ path: './.env' })
 
-const fetch = require('node-fetch')
+const fetch = require('node-fetch-retry')
 const tmi = require('tmi.js')
 const fs = require('fs')
 
@@ -30,7 +30,7 @@ fs.readFile("botcheck-marked.txt", 'utf8', (err, data) => {
 })
 
 function fetchFromBotsList() {
-    fetch(`https://raw.githubusercontent.com/Ravendwyr/bot-list/main/bot-list.txt`)
+    fetch(`https://raw.githubusercontent.com/Ravendwyr/bot-list/main/bot-list.txt`, { method: 'GET', retry: 3, pause: 1000 })
     .then(data => data.text())
     .then(data => {
         data.split(/\n/).forEach(row => {
@@ -45,7 +45,7 @@ function fetchFromBotsList() {
 }
 
 function fetchFromTwitchInsights() {
-    fetch(`https://api.twitchinsights.net/v1/bots/all`, { method: 'GET', headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
+    fetch(`https://api.twitchinsights.net/v1/bots/all`, { method: 'GET', retry: 3, pause: 1000, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
     .then(data => data.json())
     .then(data => {
         data["bots"].forEach(row => {
@@ -60,7 +60,7 @@ function fetchFromTwitchInsights() {
 }
 
 function fetchFromTwitchBotsInfo(url) {
-    fetch(url, { method: 'GET', headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
+    fetch(url, { method: 'GET', retry: 3, pause: 1000, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
     .then(data => data.json())
     .then(data => {
         data["bots"].forEach(row => {
