@@ -1,5 +1,7 @@
 
 // define configuration options
+require('dotenv').config({ path: './.env' })
+
 const fetch = require('node-fetch-retry')
 const fs = require('fs')
 
