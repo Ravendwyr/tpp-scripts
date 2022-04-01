@@ -36,9 +36,14 @@ function onMessageHandler(channel, userdata, message, self) {
         prevTime = cache[name]
 
         var millis  = currTime - prevTime
+        var minutes = Math.floor((millis / 60000))
         var seconds = ((millis % 60000) / 1000)
 
-        printMessage(`${name}'s last message was ${seconds} seconds ago.`)
+        if (minutes > 0) {
+            printMessage(`${name}'s last message was ${minutes} minutes and ${seconds} seconds ago.`)
+        } else {
+            printMessage(`${name}'s last message was ${seconds} seconds ago.`)
+        }
     }
 
     cache[name] = currTime
