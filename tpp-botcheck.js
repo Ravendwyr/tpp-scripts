@@ -109,6 +109,12 @@ function onConnectedHandler(address, port) {
 
 function onMessageHandler(channel, userdata, message, self) {
     checkMessage(userdata.username)
+
+    if (userdata.username === "tpp" && message.includes("badge from pinball")) {
+        const name = message.substring(message.indexOf("@") +1, message.indexOf(" ")).toLowerCase()
+
+        if (botList.includes(name)) printMessage(`"${name}" is in the bot list but they just won a badge from pinball.`)
+    }
 }
 
 function onJoinHandler(channel, name, self) {
