@@ -29,21 +29,6 @@ fs.readFile("botcheck-marked.txt", 'utf8', (err, data) => {
     data.split(/\r\n/g).forEach(row => notified.push(row))
 })
 
-function fetchFromBotsList() {
-    fetch(`https://raw.githubusercontent.com/Ravendwyr/bot-list/main/bot-list.txt`, { method: 'GET', retry: 3, pause: 1000 })
-    .then(data => data.text())
-    .then(data => {
-        data.split(/\n/).forEach(row => {
-            var name = row.toLowerCase().trim()
-            if (!botList.includes(name)) botList.push(name)
-        })
-
-        printMessage("Finished downloading community bot list.")
-        client.connect()
-    })
-    .catch(err => printMessage(`Error while downloading community bot list -- ${err}`))
-}
-
 function fetchFromTwitchInsights() {
     fetch(`https://api.twitchinsights.net/v1/bots/all`, { method: 'GET', retry: 3, pause: 1000, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
     .then(data => data.json())
@@ -54,7 +39,7 @@ function fetchFromTwitchInsights() {
         })
 
         printMessage("Finished downloading from TwitchInsights.")
-        fetchFromBotsList()
+        client.connect()
     })
     .catch(err => printMessage(`Error while downloading from TwitchInsights -- ${err}`))
 }
@@ -76,6 +61,28 @@ function fetchFromTwitchBotsInfo(url) {
         }
     })
     .catch(err => printMessage(`Error while downloading from TwitchBotsInfo -- ${err}`))
+}
+
+function fetchFromCommunity() {
+    Promise.all([
+        fetch('https://raw.githubusercontent.com/KateLibC/TwitchBots/main/ban_general.txt', { method: 'GET', retry: 3, pause: 1000 }).then(data => data.text()),
+        fetch('https://raw.githubusercontent.com/KateLibC/TwitchBots/main/ban_20211019.txt', { method: 'GET', retry: 3, pause: 1000 }).then(data => data.text()),
+        fetch('https://raw.githubusercontent.com/KateLibC/TwitchBots/main/ban_20211028.txt', { method: 'GET', retry: 3, pause: 1000 }).then(data => data.text()),
+        fetch('https://raw.githubusercontent.com/arrowgent/Twitchtv-Bots-List/main/list.txt', { method: 'GET', retry: 3, pause: 1000 }).then(data => data.text()),
+    ])
+    .then(data => {
+        // 'data' is an array and its .length is equivalent to the number number of queries in .all() above
+        data.forEach(names => {
+            names.split(/\n/).forEach(row => {
+                var name = row.toLowerCase().trim()
+                if (!botList.includes(name)) botList.push(name)
+            })
+        })
+
+        printMessage("Finished downloading community bot lists.")
+        fetchFromTwitchBotsInfo("https://api.twitchbots.info/v2/bot")
+    })
+    .catch(err => printMessage(`Error while downloading community bot lists -- ${err}`))
 }
 
 // gather the goods
@@ -129,7 +136,7 @@ function onNamesHandler(channel, names) {
 
 // engage
 printMessage("Downloading bot lists. This usually takes around 30 seconds to 3 minutes. Please wait...")
-fetchFromTwitchBotsInfo("https://api.twitchbots.info/v2/bot")
+fetchFromCommunity()
 
 client.on('join', onJoinHandler)
 client.on('names', onNamesHandler)
