@@ -44,7 +44,7 @@ async function getUserData(name) {
     // download the user's profile pic
     if (!fs.existsSync("user_avatars")) fs.mkdirSync("user_avatars")
 
-    const response = await fetch(user.profile_image_url, { method: 'GET', retry: 3, pause: 1000, callback: retry => { printMessage(`Retrying ${name}'s profile pic...`) }}).catch(err => {})
+    const response = await fetch(user.profile_image_url, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => { printMessage(`Retrying ${name}'s profile pic...`) }}).catch(err => {})
 
     if (!response || !response.buffer) {
         printMessage(`Socket hang-up while fetching "${name}". Skipping...`)
