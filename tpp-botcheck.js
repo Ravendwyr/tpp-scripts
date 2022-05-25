@@ -2,6 +2,8 @@
 // define configuration options
 require('dotenv').config({ path: './.env' })
 
+const args = process.argv.slice(2)
+
 const fetch = require('node-fetch-retry')
 const tmi = require('tmi.js')
 const fs = require('fs')
@@ -17,17 +19,21 @@ var safeList = []
 var notified = []
 var botList  = []
 
+if (!args.includes("--ignore-safe")) {
 fs.readFile("botcheck-safe.txt", 'utf8', (err, data) => {
     if (err) throw err
 
     data.split(/\r\n/g).forEach(row => safeList.push(row))
 })
+}
 
+if (!args.includes("--ignore-marked")) {
 fs.readFile("botcheck-marked.txt", 'utf8', (err, data) => {
     if (err) throw err
 
     data.split(/\r\n/g).forEach(row => notified.push(row))
 })
+}
 
 function fetchFromTwitchInsights() {
     fetch(`https://api.twitchinsights.net/v1/bots/all`, { method: 'GET', retry: 3, pause: 1000, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })

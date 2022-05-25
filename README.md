@@ -26,11 +26,12 @@ Originally designed as a moderation aid, this script uses [tmi.js](https://www.n
 
 This script does not save data to the hard-drive, however it does read the included `botcheck-safe.txt` and `botcheck-marked.txt` to filter out false positives from the output.
 
-`botcheck-safe.txt` is intended to be a manually maintained list of false positives while `botcheck-marked.txt` is intended to be a manually maintained list of accounts markes as bots in the stream's database.
+`botcheck-safe.txt` is intended to be a manually maintained list of false positives while `botcheck-marked.txt` is intended to be a manually maintained list of accounts marked as bots in the stream's database.  If the `--ignore-safe` flag is included in the command, the contents of `botcheck-safe.txt` will be ignored. If the `--ignore-marked` flag is included, the contents of `botcheck-marked.txt` will be ignored. It is not recommended or necessary to use these flags as they are provided mostly for debugging purposes.
 
 The script checks the names on inital boot, when a new message comes in, or when a user joins or leaves the chat and doesn't stop until terminated.
 
     $ node tpp-botcheck
+    $ node tpp-botcheck --ignore-safe --ignore-marked
 
 ***
 
