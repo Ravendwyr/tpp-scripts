@@ -21,7 +21,7 @@ const twitch = new TwitchApi({
 
 // gather the goods
 async function getUserData(name) {
-    const users = await twitch.getUsers(name).catch(err => printMessage(err))
+    const users = await twitch.getUsers(name).catch(err => {})
 
     /*/ download the user's data
     if (!fs.existsSync("user_data")) fs.mkdirSync("user_data")
