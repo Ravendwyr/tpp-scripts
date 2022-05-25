@@ -36,7 +36,7 @@ fs.readFile("botcheck-marked.txt", 'utf8', (err, data) => {
 }
 
 function fetchFromTwitchInsights() {
-    fetch(`https://api.twitchinsights.net/v1/bots/all`, { method: 'GET', retry: 3, pause: 1000, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
+    fetch(`https://api.twitchinsights.net/v1/bots/all`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
     .then(data => data.json())
     .then(data => {
         data["bots"].forEach(row => {
@@ -51,7 +51,7 @@ function fetchFromTwitchInsights() {
 }
 
 function fetchFromCommunity() {
-    fetch('https://raw.githubusercontent.com/arrowgent/Twitchtv-Bots-List/main/list.txt', { method: 'GET', retry: 3, pause: 1000 })
+    fetch('https://raw.githubusercontent.com/arrowgent/Twitchtv-Bots-List/main/list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true })
     .then(data => data.text())
     .then(data => {
         data.split(/\n/).forEach(row => {
