@@ -52,4 +52,4 @@ function onMessageHandler(channel, userdata, message, self) {
 // engage
 client.on('message', onMessageHandler)
 client.on('connected', onConnectedHandler)
-client.connect()
+client.connect().catch(() => printMessage(`Unable to connect to chat. Please confirm your oauth token is correct.`))
