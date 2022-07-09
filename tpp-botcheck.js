@@ -45,7 +45,7 @@ function fetchFromTwitchInsights() {
         })
 
         printMessage("Finished downloading from TwitchInsights.")
-        client.connect()
+        client.connect().catch(() => printMessage(`Unable to connect to chat. Please confirm your oauth token is correct.`))
     })
     .catch(err => printMessage(`Error while downloading from TwitchInsights -- ${err}`))
 }
