@@ -17,7 +17,7 @@ const client = new tmi.client({
 function getUserData(name) {
     if (name === "tpp" || name === "tppsimulator") return
 
-    fetch(`https://api.ivr.fi/v2/twitch/user/${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => { printMessage(`Retrying ${name}'s data...`) }})
+    fetch(`https://api.ivr.fi/v2/twitch/user/${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
     .then(user => user.json())
     .then(user => {
         if (!user || user.statusCode == "404") return
@@ -31,7 +31,7 @@ function getUserData(name) {
         // download the user's profile pic
         if (!fs.existsSync("user_avatars")) fs.mkdirSync("user_avatars")
 
-        fetch(user.logo, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => { printMessage(`Retrying ${name}'s profile pic...`) }})
+        fetch(user.logo, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s profile pic...`)})
         .then(response => response.buffer())
         .then(buffer => {
             if (!buffer) return
