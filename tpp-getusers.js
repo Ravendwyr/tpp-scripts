@@ -34,6 +34,8 @@ function getUserData(name) {
         fetch(user.logo, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => { printMessage(`Retrying ${name}'s profile pic...`) }})
         .then(response => response.buffer())
         .then(buffer => {
+            if (!buffer) return
+
             imghash.hash(buffer, 16).then(hash => {
                 if (hash != "00000000000000000000000000000000f81ff00fe007e1870000000000000000" && // turquoise
                     hash != "00000000000007e007e00e700e7007e007e00ff01ff81e781818000000000000" && // pink, purple, and dark purple
