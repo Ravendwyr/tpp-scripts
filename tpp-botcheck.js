@@ -36,7 +36,7 @@ fs.readFile("botcheck-marked.txt", 'utf8', (err, data) => {
 }
 
 function fetchFromTwitchInsights() {
-    fetch(`https://api.twitchinsights.net/v1/bots/all`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
+    fetch(`https://api.twitchinsights.net/v1/bots/all`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying TwitchInsights list...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
     .then(data => data.json())
     .then(data => {
         data["bots"].forEach(row => {
@@ -47,11 +47,11 @@ function fetchFromTwitchInsights() {
         printMessage("Finished downloading from TwitchInsights.")
         client.connect().catch(() => printMessage(`Unable to connect to chat. Please confirm your oauth token is correct.`))
     })
-    .catch(err => printMessage(`Error while downloading from TwitchInsights -- ${err}`))
+    .catch(err => printMessage(`Error while downloading TwitchInsights list -- ${err}`))
 }
 
-function fetchFromCommunity() {
-    fetch('https://raw.githubusercontent.com/arrowgent/Twitchtv-Bots-List/main/list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true })
+function fetchFromArrowgent() {
+    fetch('https://raw.githubusercontent.com/arrowgent/Twitchtv-Bots-List/main/list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying Arrowgent's list...`) })
     .then(data => data.text())
     .then(data => {
         data.split(/\n/).forEach(row => {
@@ -59,10 +59,10 @@ function fetchFromCommunity() {
             if (!botList.includes(name)) botList.push(name)
         })
 
-        printMessage("Finished downloading community bot lists.")
+        printMessage("Finished downloading from Arrowgent.")
         fetchFromTwitchInsights()
     })
-    .catch(err => printMessage(`Error while downloading community bot lists -- ${err}`))
+    .catch(err => printMessage(`Error while downloading Arrowgent's list -- ${err}`))
 }
 
 // gather the goods
@@ -142,7 +142,7 @@ function onNamesHandler(channel, names) {
 }
 
 // engage
-fetchFromCommunity()
+fetchFromArrowgent()
 
 client.on('join', onJoinHandler)
 client.on('names', onNamesHandler)
