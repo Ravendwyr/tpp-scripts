@@ -23,7 +23,7 @@ if (!args.includes("--ignore-safe")) {
 fs.readFile("botcheck-safe.txt", 'utf8', (err, data) => {
     if (err) throw err
 
-    data.split(/\r\n/g).forEach(row => safeList.push(row))
+    data.split(/\r\n/g).forEach(row => { if (row != "") safeList.push(row) })
 })
 }
 
@@ -31,7 +31,7 @@ if (!args.includes("--ignore-marked")) {
 fs.readFile("botcheck-marked.txt", 'utf8', (err, data) => {
     if (err) throw err
 
-    data.split(/\r\n/g).forEach(row => notified.push(row))
+    data.split(/\r\n/g).forEach(row => { if (row != "") notified.push(row) })
 })
 }
 
