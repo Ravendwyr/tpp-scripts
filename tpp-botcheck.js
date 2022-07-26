@@ -70,7 +70,7 @@ function queryIVR(name) {
     fetch(`https://api.ivr.fi/v2/twitch/user/${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
     .then(user => user.json())
     .then(user => {
-        if (!user || user.statusCode == "404") return
+        if (!user || user.error) return
 
         /*/ download the user's data
         if (!fs.existsSync("user_data")) fs.mkdirSync("user_data")
@@ -124,6 +124,7 @@ function onMessageHandler(channel, userdata, message, self) {
         const name = message.substring(message.indexOf("@") +1, message.indexOf(" ")).toLowerCase()
 
         if (botList.includes(name)) printMessage(`"${name}" is in the bot list but they just won a badge from pinball.`)
+        else queryIVR(name)
     }
 }
 
