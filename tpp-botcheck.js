@@ -66,7 +66,7 @@ function fetchFromArrowgent() {
 }
 
 // gather the goods
-function queryIVR(name) {
+function queryIVR(name, reason) {
     fetch(`https://api.ivr.fi/v2/twitch/user/${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
     .then(user => user.json())
     .then(user => {
@@ -82,7 +82,7 @@ function queryIVR(name) {
 
         if (user.verifiedBot) {
             notified.push(name)
-            printMessage(`"${name}" has verifiedBot set to true. Please verify before marking.`)
+            printMessage(`"${name}" detected ${reason} but has verifiedBot set to true. Please verify before marking.`)
         }
     })
     .catch(err => printMessage(`Error fetching data for "${name}" -- ${err}`))
@@ -117,26 +117,26 @@ function onConnectedHandler(address, port) {
 }
 
 function onMessageHandler(channel, userdata, message, self) {
-    queryIVR(userdata.username)
+    queryIVR(userdata.username, "sending a message")
     checkMessage(userdata.username)
 
     if (userdata.username === "tpp" && message.includes("badge from pinball")) {
         const name = message.substring(message.indexOf("@") +1, message.indexOf(" ")).toLowerCase()
 
         if (botList.includes(name)) printMessage(`"${name}" is in the bot list but they just won a badge from pinball.`)
-        else queryIVR(name)
+        queryIVR(name)
     }
 }
 
 function onJoinHandler(channel, name, self) {
-    queryIVR(name)
+    queryIVR(name, "joining chat")
     checkUser(name, "joining chat")
 }
 
 function onNamesHandler(channel, names) {
     names.forEach((name, i) => {
         setTimeout(() => {
-            queryIVR(name)
+            queryIVR(name, "during startup")
             checkUser(name, "during startup")
         }, i * 250)
     })
