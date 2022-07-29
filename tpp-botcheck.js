@@ -18,6 +18,7 @@ const client = new tmi.client({
 var safeList = []
 var notified = []
 var botList  = []
+var idList   = []
 
 if (!args.includes("--ignore-safe")) {
 fs.readFile("botcheck-safe.txt", 'utf8', (err, data) => {
@@ -65,6 +66,17 @@ function fetchFromArrowgent() {
     .catch(err => printMessage(`Error while downloading Arrowgent's list -- ${err}`))
 }
 
+function fetchFromCommanderRoot() {
+    fetch(`https://twitch-tools.rootonline.de/blocklist_manager.php?preset=known_bot_users`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
+    .then(data => data.json())
+    .then(data => {
+        data.forEach(id => idList.push(id.toString()))
+        printMessage("Finished downloading from CommanderRoot.")
+        fetchFromArrowgent()
+    })
+    .catch(err => printMessage(`Error while downloading CommanderRoot's list -- ${err}`))
+}
+
 // gather the goods
 function queryIVR(name, reason) {
     fetch(`https://api.ivr.fi/v2/twitch/user/${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
@@ -79,6 +91,11 @@ function queryIVR(name, reason) {
         /*/
 
         if (safeList.includes(name) || notified.includes(name)) return
+
+        if (idList.includes(user.id)) {
+            notified.push(name)
+            printMessage(`"${name}" detected ${reason} but is in CommanderRoot's bot list. Please verify before marking.`)
+        }
 
         if (user.verifiedBot) {
             notified.push(name)
@@ -114,6 +131,7 @@ function printMessage(message) {
 function onConnectedHandler(address, port) {
     printMessage(`Connected to ${address}:${port}`)
     printMessage(`There are ${botList.length} names in the list.`)
+    printMessage(`There are ${idList.length} IDs in CommanderRoot's list.`)
 }
 
 function onMessageHandler(channel, userdata, message, self) {
@@ -143,7 +161,7 @@ function onNamesHandler(channel, names) {
 }
 
 // engage
-fetchFromArrowgent()
+fetchFromCommanderRoot()
 
 client.on('join', onJoinHandler)
 client.on('names', onNamesHandler)
