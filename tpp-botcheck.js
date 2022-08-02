@@ -93,32 +93,21 @@ function queryIVR(name, reason) {
         if (safeList.includes(name) || notified.includes(name)) return
 
         if (idList.includes(user.id)) {
-            notified.push(name)
             printMessage(`"${name}" detected ${reason} but is in CommanderRoot's bot list. Please verify before marking.`)
         }
 
         if (user.verifiedBot) {
-            notified.push(name)
             printMessage(`"${name}" detected ${reason} but has verifiedBot set to true. Please verify before marking.`)
         }
     })
     .catch(err => printMessage(`Error fetching data for "${name}" -- ${err}`))
 }
 
-async function checkUser(name, reason) {
+function checkUser(name, reason) {
     if (safeList.includes(name) || notified.includes(name)) return
 
     if (botList.includes(name)) {
-        notified.push(name)
         printMessage(`"${name}" detected ${reason}. Please verify before marking.`)
-    }
-}
-
-async function checkMessage(username) {
-    if (safeList.includes(username)) return
-
-    if (botList.includes(username)) {
-        printMessage(`"${username}" is in the bot list but they just sent a message in chat. This is likely a false positive.`)
     }
 }
 
@@ -135,18 +124,13 @@ function onConnectedHandler(address, port) {
 }
 
 function onMessageHandler(channel, userdata, message, self) {
+    if (userdata.username === "tpp") return
+
     queryIVR(userdata.username, "sending a message")
-    checkMessage(userdata.username)
-
-    if (userdata.username === "tpp" && message.includes("badge from pinball")) {
-        const name = message.substring(message.indexOf("@") +1, message.indexOf(" ")).toLowerCase()
-
-        if (botList.includes(name)) printMessage(`"${name}" is in the bot list but they just won a badge from pinball.`)
-        queryIVR(name)
-    }
+    checkUser(userdata.username, "sending a message")
 }
 
-function onJoinHandler(channel, name, self) {
+function onJoinHandler(channel, name) {
     queryIVR(name, "joining chat")
     checkUser(name, "joining chat")
 }
