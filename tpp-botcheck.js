@@ -66,13 +66,29 @@ function fetchFromArrowgent() {
     .catch(err => printMessage(`Error while downloading Arrowgent's list -- ${err}`))
 }
 
+function fetchFromFrankerFaceZ() {
+    fetch(`https://api.frankerfacez.com/v1/badge/bot`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
+    .then(data => data.json())
+    .then(data => {
+        data["users"][2].forEach(row => {
+            var name = row.toLowerCase().trim()
+            if (!botList.includes(name)) botList.push(name)
+        })
+
+        printMessage("Finished downloading from FrankerFaceZ.")
+        fetchFromArrowgent()
+    })
+    .catch(err => printMessage(`Error while downloading FrankerFaceZ's list -- ${err}`))
+}
+
 function fetchFromCommanderRoot() {
     fetch(`https://twitch-tools.rootonline.de/blocklist_manager.php?preset=known_bot_users`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
     .then(data => data.json())
     .then(data => {
         data.forEach(id => idList.push(id.toString()))
+
         printMessage("Finished downloading from CommanderRoot.")
-        fetchFromArrowgent()
+        fetchFromFrankerFaceZ()
     })
     .catch(err => printMessage(`Error while downloading CommanderRoot's list -- ${err}`))
 }
