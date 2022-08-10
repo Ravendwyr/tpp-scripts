@@ -58,6 +58,16 @@ The script checks users on inital boot, when a new message comes in, or when a u
 
 ***
 
+## tpp-namecheck.js
+
+This small and simple script will look through any cached userdata files saved by `tpp-botcheck.js` or `tpp-getusers.js` to check to see if any of them contain matching user ID numbers.  If it detects a matching number, it will output all of the usernames that have this ID number to the console to inform of a potential account name change.  If it does not detect any matches, it will fail silently.
+
+This script runs once and terminates itself after it has finished looking through the files.
+
+    $ node tpp-namecheck
+
+***
+
 ## tpp-runstatus.js
 
 This queries the TwitchPlaysPokemon API for any active runs and saves the current run status to `run_status/<run>-<timestamp>.json`.  If no run is active or if the API returns an error, the results are saved as `run_status/unspecified-<timestamp>.json` instead.  If the server itself returns an error (e.g. 404 Page Not Found) then no file will be saved.
