@@ -29,10 +29,12 @@ function getUserData(name) {
     fetch(`https://api.ivr.fi/v2/twitch/user/${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
     .then(user => user.json())
     .then(user => {
-        if (!user || user.statusCode == "404") return
+        if (!user || user.error) return
 
         // download the user's data
         if (isSavingData) fs.writeFile(`user_data/${name}.json`, JSON.stringify(user, null, 4), (err) => { if (err) throw err })
+
+        if (user.logo.includes("user-default-pictures")) return
 
         // download the user's profile pic
         fetch(user.logo, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s profile pic...`)})
@@ -40,19 +42,8 @@ function getUserData(name) {
         .then(buffer => {
             if (!buffer) return
 
-            imghash.hash(buffer, 16).then(hash => {
-                if (hash != "00000000000000000000000000000000f81ff00fe007e1870000000000000000" && // turquoise
-                    hash != "00000000000007e007e00e700e7007e007e00ff01ff81e781818000000000000" && // pink, purple, and dark purple
-                    hash != "ffffffffffffffffffffffffffffffff07e00ff01ff81e78ffffffffffffffff" && // blue, and bright pink
-                    hash != "fffffffffffff81ff81ff18ff18ff81ff81ff00fe007e187e7e7ffffffffffff")   // yellow, orange, grey, cyan, red, green, and seagreen
-                    fs.writeFile(`user_avatars/${name}-${hash}.png`, buffer, err => { if (err) throw err })
-                /*/
-                else {
-                    fs.writeFile(`dummy_avatars/${name}.png`, buffer, err => { if (err) throw err })
-                    printMessage(`${name}'s avatar produced a dummy hash, please confirm.`)
-                }
-                /*/
-            })
+            imghash.hash(buffer, 16)
+            .then(hash => fs.writeFile(`user_avatars/${name}-${hash}.png`, buffer, err => { if (err) throw err }))
             .catch(err => printMessage(`error saving avatar for "${name}" -- ${err}`))
         })
         .catch(err => printMessage(`error fetching avatar for "${name}" -- ${err}`))
@@ -67,7 +58,6 @@ function printMessage(message) {
 
 // event handlers
 function onConnectedHandler(address, port) {
-    //if (!fs.existsSync("dummy_avatars")) fs.mkdirSync("dummy_avatars")
     if (!fs.existsSync("user_avatars")) fs.mkdirSync("user_avatars")
     printMessage(`Connected to ${address}:${port}`)
 }
