@@ -1,5 +1,5 @@
 # tpp-scripts
-A collection of scripts that do stuff with Twitch Plays Pokémon API.
+My collection of scripts to aid moderation at Twitch Plays Pokémon.
 
 ***
 
@@ -51,11 +51,12 @@ The script checks every new message comes in and doesn't stop until terminated.
 
 Originally designed as a moderation aid, this script uses [tmi.js](https://www.npmjs.com/package/tmi.js) to query the Twitch API to download and save the userdata and profile pictures of ~~almost~~ everyone in the chosen channel's chat room.
 
-User data is saved to `user_data/<username>.json` while their profile pictures are saved to `user_avatars/<username>-<filehash>.png`.  Saving user data is disabled by default but can be easily enabled by removing the comment blocks surrounding the code.
+User data is saved to `user_data/<username>.json` while their profile pictures are saved to `user_avatars/<username>-<filehash>.png`.  Saving user data is disabled by default but can be easily enabled by including the `--save-data` argument.
 
 The script checks users on inital boot, when a new message comes in, or when a user joins or leaves the chat and doesn't stop until terminated.
 
     $ node tpp-getusers
+    $ node tpp-getusers --save-data
 
 ***
 
