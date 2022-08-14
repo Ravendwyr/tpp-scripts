@@ -2,6 +2,8 @@
 // define configuration options
 require('dotenv').config({ path: './.env' })
 
+const args = process.argv.slice(2)
+
 const fetch = require('node-fetch-retry')
 const imghash = require("imghash")
 const tmi = require('tmi.js')
@@ -14,6 +16,13 @@ const client = new tmi.client({
 })
 
 // gather the goods
+var isSavingData = false
+
+if (args.includes("--save-data")) {
+    if (!fs.existsSync("user_data")) fs.mkdirSync("user_data")
+    isSavingData = true
+}
+
 function getUserData(name) {
     if (name === "tpp" || name === "tppsimulator") return
 
@@ -22,15 +31,10 @@ function getUserData(name) {
     .then(user => {
         if (!user || user.statusCode == "404") return
 
-        /*/ download the user's data
-        if (!fs.existsSync("user_data")) fs.mkdirSync("user_data")
-
-        fs.writeFile(`user_data/${name}.json`, JSON.stringify(user, null, 4), (err) => { if (err) throw err })
-        /*/
+        // download the user's data
+        if (isSavingData) fs.writeFile(`user_data/${name}.json`, JSON.stringify(user, null, 4), (err) => { if (err) throw err })
 
         // download the user's profile pic
-        if (!fs.existsSync("user_avatars")) fs.mkdirSync("user_avatars")
-
         fetch(user.logo, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s profile pic...`)})
         .then(response => response.buffer())
         .then(buffer => {
@@ -44,8 +48,6 @@ function getUserData(name) {
                     fs.writeFile(`user_avatars/${name}-${hash}.png`, buffer, err => { if (err) throw err })
                 /*/
                 else {
-                    if (!fs.existsSync("dummy_avatars")) fs.mkdirSync("dummy_avatars")
-
                     fs.writeFile(`dummy_avatars/${name}.png`, buffer, err => { if (err) throw err })
                     printMessage(`${name}'s avatar produced a dummy hash, please confirm.`)
                 }
@@ -65,6 +67,8 @@ function printMessage(message) {
 
 // event handlers
 function onConnectedHandler(address, port) {
+    //if (!fs.existsSync("dummy_avatars")) fs.mkdirSync("dummy_avatars")
+    if (!fs.existsSync("user_avatars")) fs.mkdirSync("user_avatars")
     printMessage(`Connected to ${address}:${port}`)
 }
 
