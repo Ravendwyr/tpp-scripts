@@ -24,7 +24,7 @@ These scripts have been built and tested with [Node 12](https://nodejs.org/dist/
 
 Originally designed as a moderation aid, this script uses [tmi.js](https://www.npmjs.com/package/tmi.js) to scan for and detect bot accounts in the chosen channel's chat room.  The userlist is compared with a list of bots on [TwitchInsights](https://twitchinsights.net/bots) and [TwitchBotsInfo](https://twitchbots.info/bots) and prints detected bot accounts into the terminal window.  Each account is only printed once to reduce spam.
 
-This script can save user data to `user_data/<username>.json` however this is disabled by default.  It also reads the included `botcheck-safe.txt` and `botcheck-marked.txt` to filter out duplicates and false positives from the output.  Saving user data can be easily enabled by removing the comment blocks surrounding the code.
+This script can save user data to `user_data/<username>.json` however this is disabled by default.  It also reads the included `botcheck-safe.txt` and `botcheck-marked.txt` to filter out duplicates and false positives from the output.  Saving user data can be easily enabled by including the `--save-data` argument.
 
 `botcheck-safe.txt` is intended to be a manually maintained list of false positives while `botcheck-marked.txt` is intended to be a manually maintained list of accounts marked as bots in the stream's database.  If the `--ignore-safe` flag is included in the command, the contents of `botcheck-safe.txt` will be ignored. If the `--ignore-marked` flag is included, the contents of `botcheck-marked.txt` will be ignored. It is not recommended nor necessary to use these flags as they are provided mostly for debugging purposes.
 
@@ -32,6 +32,7 @@ The script checks the names on inital boot, when a new message comes in, or when
 
     $ node tpp-botcheck
     $ node tpp-botcheck --ignore-safe --ignore-marked
+    $ node tpp-botcheck --save-data
 
 ***
 

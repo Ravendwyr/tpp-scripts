@@ -94,17 +94,21 @@ function fetchFromCommanderRoot() {
 }
 
 // gather the goods
+var isSavingData = false
+
+if (args.includes("--save-data")) {
+    if (!fs.existsSync("user_data")) fs.mkdirSync("user_data")
+    isSavingData = true
+}
+
 function queryIVR(name, reason) {
     fetch(`https://api.ivr.fi/v2/twitch/user/${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
     .then(user => user.json())
     .then(user => {
         if (!user || user.error) return
 
-        /*/ download the user's data
-        if (!fs.existsSync("user_data")) fs.mkdirSync("user_data")
-
-        fs.writeFile(`user_data/${name}.json`, JSON.stringify(user, null, 4), (err) => { if (err) throw err })
-        /*/
+        // download the user's data
+        if (isSavingData) fs.writeFile(`user_data/${name}.json`, JSON.stringify(user, null, 4), (err) => { if (err) throw err })
 
         if (safeList.includes(name) || notified.includes(name)) return
 
