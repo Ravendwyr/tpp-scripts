@@ -155,6 +155,11 @@ function onJoinHandler(channel, name) {
     checkUser(name, "joining chat")
 }
 
+function onPartHandler(channel, name) {
+    queryIVR(name, "leaving chat")
+    checkUser(name, "leaving chat")
+}
+
 function onNamesHandler(channel, names) {
     names.forEach((name, i) => {
         setTimeout(() => {
@@ -168,6 +173,7 @@ function onNamesHandler(channel, names) {
 fetchFromCommanderRoot()
 
 client.on('join', onJoinHandler)
+client.on('part', onPartHandler)
 client.on('names', onNamesHandler)
 client.on('message', onMessageHandler)
 client.on('connected', onConnectedHandler)
