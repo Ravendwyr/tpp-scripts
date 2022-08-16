@@ -6,7 +6,7 @@ const args = process.argv.slice(2)
 
 const fetch = require('node-fetch-retry')
 const tmi = require('tmi.js')
-const fs = require('fs')
+const fs = require('graceful-fs')
 
 // create a client with our options
 const client = new tmi.client({

@@ -3,7 +3,7 @@
 require('dotenv').config({ path: './.env' })
 
 const fetch = require('node-fetch-retry')
-const fs = require('fs')
+const fs = require('graceful-fs')
 
 // check the time
 function getDateString() {
