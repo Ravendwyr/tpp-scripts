@@ -144,10 +144,16 @@ function onConnectedHandler(address, port) {
 }
 
 function onMessageHandler(channel, userdata, message, self) {
-    if (userdata.username === "tpp") return
+    var name = userdata.username
 
-    queryIVR(userdata.username, "sending a message")
-    checkUser(userdata.username, "sending a message")
+    if (name === "tpp") return
+
+    if (notified.includes(name)) {
+        printMessage(`"${name}" is in the marked list but they just sent a message.`)
+    }
+
+    queryIVR(name, "sending a message")
+    checkUser(name, "sending a message")
 }
 
 function onJoinHandler(channel, name) {
