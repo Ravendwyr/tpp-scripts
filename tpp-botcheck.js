@@ -114,10 +114,12 @@ function queryIVR(name, reason) {
 
         if (idList.includes(user.id)) {
             printMessage(`"${name}" detected ${reason} but is in CommanderRoot's bot list. Please verify before marking.`)
+            notified.push(name)
         }
 
         if (user.verifiedBot) {
             printMessage(`"${name}" detected ${reason} but has verifiedBot set to true. Please verify before marking.`)
+            notified.push(name)
         }
     })
     .catch(err => printMessage(`Error fetching data for "${name}" -- ${err}`))
@@ -128,6 +130,7 @@ function checkUser(name, reason) {
 
     if (botList.includes(name)) {
         printMessage(`"${name}" detected ${reason}. Please verify before marking.`)
+        notified.push(name)
     }
 }
 
