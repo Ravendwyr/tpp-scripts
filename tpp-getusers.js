@@ -16,6 +16,7 @@ const client = new tmi.client({
 })
 
 // gather the goods
+var previousName = ""
 var isSavingData = false
 
 if (args.includes("--save-data")) {
@@ -24,7 +25,7 @@ if (args.includes("--save-data")) {
 }
 
 function getUserData(name) {
-    if (name === "tpp" || name === "tppsimulator") return
+    if (name === "tpp" || name === "tppsimulator" || name === previousName) return
 
     fetch(`https://api.ivr.fi/v2/twitch/user/${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
     .then(user => user.json())
@@ -33,7 +34,6 @@ function getUserData(name) {
 
         // download the user's data
         if (isSavingData) fs.writeFile(`user_data/${name}.json`, JSON.stringify(user, null, 4), (err) => { if (err) throw err })
-
         if (user.logo.includes("user-default-pictures")) return
 
         // download the user's profile pic
@@ -49,6 +49,8 @@ function getUserData(name) {
         .catch(err => printMessage(`error fetching avatar for "${name}" -- ${err}`))
     })
     .catch(err => printMessage(`error fetching data for "${name}" -- ${err}`))
+
+    previousName = name
 }
 
 // our pretty printer
