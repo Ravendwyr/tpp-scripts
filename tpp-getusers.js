@@ -30,14 +30,14 @@ function getUserData(name) {
     fetch(`https://api.ivr.fi/v2/twitch/user?login=${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
     .then(user => user.json())
     .then(user => {
-        if (!user || user.error) return
+        if (!user || user.length != 1) return
 
         // download the user's data
-        if (isSavingData) fs.writeFile(`user_data/${name}.json`, JSON.stringify(user, null, 4), (err) => { if (err) throw err })
-        if (user.logo.includes("user-default-pictures")) return
+        if (isSavingData) fs.writeFile(`user_data/${name}.json`, JSON.stringify(user[0], null, 4), (err) => { if (err) throw err })
+        if (user[0].logo.includes("user-default-pictures")) return
 
         // download the user's profile pic
-        fetch(user.logo, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s profile pic...`)})
+        fetch(user[0].logo, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s profile pic...`)})
         .then(response => response.buffer())
         .then(buffer => {
             if (!buffer) return
