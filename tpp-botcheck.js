@@ -108,19 +108,19 @@ function queryIVR(name, reason) {
     fetch(`https://api.ivr.fi/v2/twitch/user?login=${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr' } })
     .then(user => user.json())
     .then(user => {
-        if (!user || user.error) return
+        if (!user || user.length != 1) return
 
         // download the user's data
-        if (isSavingData) fs.writeFile(`user_data/${name}.json`, JSON.stringify(user, null, 4), (err) => { if (err) throw err })
+        if (isSavingData) fs.writeFile(`user_data/${name}.json`, JSON.stringify(user[0], null, 4), (err) => { if (err) throw err })
 
         if (safeList.includes(name) || notified.includes(name)) return
 
-        if (idList.includes(user.id)) {
+        if (idList.includes(user[0].id)) {
             printMessage(`"${name}" detected ${reason} but is in CommanderRoot's bot list. Please verify before marking.`)
             notified.push(name)
         }
 
-        if (user.verifiedBot) {
+        if (user[0].verifiedBot) {
             printMessage(`"${name}" detected ${reason} but has verifiedBot set to true. Please verify before marking.`)
             notified.push(name)
         }
