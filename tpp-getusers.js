@@ -11,7 +11,7 @@ const fs = require('graceful-fs')
 
 // create a client with our options
 const client = new tmi.client({
-    identity: { username: process.env.TWITCH_USERNAME, password: process.env.TWITCH_OAUTH },
+    identity: { username: "justinfan1986", password: "kappa" },
     channels: [ "twitchplayspokemon" ],
 })
 
