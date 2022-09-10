@@ -144,9 +144,10 @@ function printMessage(message) {
 
 // event handlers
 function onConnectedHandler(address, port) {
-    printMessage(`Connected to ${address}:${port}`)
-    printMessage(`There are ${botList.length} names in the list.`)
-    printMessage(`There are ${idList.length} IDs in CommanderRoot's list.`)
+    printMessage(`There are ${idList.length} IDs in CommanderRoot's bot list.`)
+    printMessage(`There are ${botList.length} names in the master bot list.`)
+    printMessage(`There are ${notified.length} names in the marked list.`)
+    printMessage(`There are ${safeList.length} names in the safe list.`)
 }
 
 function onMessageHandler(channel, userdata, message, self) {
@@ -188,4 +189,4 @@ client.on('join', onJoinHandler)
 client.on('part', onPartHandler)
 client.on('names', onNamesHandler)
 client.on('message', onMessageHandler)
-client.on('connected', onConnectedHandler)
+client.on('roomstate', onConnectedHandler)
