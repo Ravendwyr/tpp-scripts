@@ -1,7 +1,5 @@
 
 // define configuration options
-require('dotenv').config({ path: './.env' })
-
 const args = process.argv.slice(2)
 
 const fetch = require('node-fetch-retry')

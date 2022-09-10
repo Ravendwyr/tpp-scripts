@@ -1,7 +1,5 @@
 
 // define configuration options
-require('dotenv').config({ path: './.env' })
-
 const tmi = require('tmi.js')
 
 const cache = {}
