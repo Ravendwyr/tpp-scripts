@@ -13,8 +13,20 @@ const client = new tmi.client({
     channels: [ "twitchplayspokemon" ],
 })
 
-// gather the goods
+// throttle queries. we don't want to thrash the servers too much.
+const queue = []
+
 var previousName = ""
+var timer
+
+function addToQueue(name) {
+    if (queue.includes(name) || name == previousName || name == "tpp" || name == "tppsimulator") return
+    else queue.push(name)
+
+    if (!timer) timer = setInterval(() => { if (queue.length > 0) getUserData(queue.splice(0, 1)[0]) }, 500)
+}
+
+// gather the goods
 var isSavingData = false
 
 if (args.includes("--save-data")) {
@@ -23,7 +35,7 @@ if (args.includes("--save-data")) {
 }
 
 function getUserData(name) {
-    if (name === "tpp" || name === "tppsimulator" || name === previousName) return
+    previousName = name
 
     fetch(`https://api.ivr.fi/v2/twitch/user?login=${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
     .then(user => user.json())
@@ -48,7 +60,7 @@ function getUserData(name) {
     })
     .catch(err => printMessage(`error fetching data for "${name}" -- ${err}`))
 
-    previousName = name
+    if (queue.length == 0) timer = clearInterval(timer)
 }
 
 // our pretty printer
@@ -63,21 +75,19 @@ function onConnectedHandler(address, port) {
 }
 
 function onMessageHandler(channel, userdata, message, self) {
-    getUserData(userdata.username)
+    addToQueue(userdata.username)
 }
 
 function onJoinHandler(channel, name, self) {
-    getUserData(name)
+    addToQueue(name)
 }
 
 function onPartHandler(channel, name, self) {
-    getUserData(name)
+    addToQueue(name)
 }
 
 function onNamesHandler(channel, names) {
-    names.forEach((name, i) => {
-        setTimeout(() => { getUserData(name) }, i * 500)
-    })
+    names.forEach((name) => addToQueue(name))
 }
 
 // engage

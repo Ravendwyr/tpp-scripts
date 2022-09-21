@@ -12,6 +12,19 @@ const client = new tmi.client({
     channels: [ "twitchplayspokemon" ],
 })
 
+// throttle queries. we don't want to thrash the servers too much.
+const queue = []
+
+var previousName = ""
+var timer
+
+function addToQueue(name) {
+    if (queue.includes(name) || name == previousName || name == "tpp") return
+    else queue.push(name)
+
+    if (!timer) timer = setInterval(() => { if (queue.length > 0) queryIVR(queue.splice(0, 1)[0]) }, 350)
+}
+
 // build our bot list
 var safeList = []
 var notified = []
@@ -92,7 +105,6 @@ function fetchFromCommanderRoot() {
 }
 
 // gather the goods
-var previousName = ""
 var isSavingData = false
 
 if (args.includes("--save-data")) {
@@ -100,8 +112,8 @@ if (args.includes("--save-data")) {
     isSavingData = true
 }
 
-function queryIVR(name, reason) {
-    if (name === previousName) return
+function queryIVR(name) {
+    previousName = name
 
     fetch(`https://api.ivr.fi/v2/twitch/user?login=${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
     .then(user => user.json())
@@ -114,18 +126,18 @@ function queryIVR(name, reason) {
         if (safeList.includes(name) || notified.includes(name)) return
 
         if (idList.includes(user[0].id)) {
-            printMessage(`"${name}" detected ${reason} but is in CommanderRoot's bot list. Please verify before marking.`)
+            printMessage(`"${name}" detected but is in CommanderRoot's bot list. Please verify before marking.`)
             notified.push(name)
         }
 
         if (user[0].verifiedBot) {
-            printMessage(`"${name}" detected ${reason} but has verifiedBot set to true. Please verify before marking.`)
+            printMessage(`"${name}" detected but has verifiedBot set to true. Please verify before marking.`)
             notified.push(name)
         }
     })
     .catch(err => printMessage(`Error fetching data for "${name}" -- ${err}`))
 
-    previousName = name
+    if (queue.length == 0) timer = clearInterval(timer)
 }
 
 function checkUser(name, reason) {
@@ -153,32 +165,28 @@ function onConnectedHandler(address, port) {
 function onMessageHandler(channel, userdata, message, self) {
     var name = userdata.username
 
-    if (name === "tpp") return
-
     if (notified.includes(name)) {
         printMessage(`"${name}" is in the marked list but they just sent a message.`)
     }
 
-    queryIVR(name, "sending a message")
+    addToQueue(name)
     checkUser(name, "sending a message")
 }
 
 function onJoinHandler(channel, name) {
-    queryIVR(name, "joining chat")
+    addToQueue(name)
     checkUser(name, "joining chat")
 }
 
 function onPartHandler(channel, name) {
-    queryIVR(name, "leaving chat")
+    addToQueue(name)
     checkUser(name, "leaving chat")
 }
 
 function onNamesHandler(channel, names) {
-    names.forEach((name, i) => {
-        setTimeout(() => {
-            queryIVR(name, "during startup")
-            checkUser(name, "during startup")
-        }, i * 250)
+    names.forEach((name) => {
+        addToQueue(name)
+        checkUser(name, "during startup")
     })
 }
 
