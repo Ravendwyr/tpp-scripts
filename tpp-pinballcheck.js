@@ -24,7 +24,7 @@ var safeList = []
 var notified = []
 
 if (!args.includes("--ignore-safe")) {
-    fs.readFile("pinballcheck-safe.txt", 'utf8', (err, data) => {
+    fs.readFile("botcheck-safe.txt", 'utf8', (err, data) => {
         if (err) throw err
 
         data.split(/\r\n/g).forEach(row => { if (row != "") safeList.push(row) })
