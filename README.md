@@ -22,7 +22,7 @@ These scripts have been built and tested with [Node 12](https://nodejs.org/dist/
 
 ## tpp-botcheck.js
 
-Originally designed as a moderation aid, this script uses [tmi.js](https://www.npmjs.com/package/tmi.js) to scan for and detect bot accounts in the chosen channel's chat room.  The userlist is compared with a list of bots on [TwitchInsights](https://twitchinsights.net/bots) and [TwitchBotsInfo](https://twitchbots.info/bots) and prints detected bot accounts into the terminal window.  Each account is only printed once to reduce spam.
+Originally designed as a moderation aid, this script uses [tmi.js](https://www.npmjs.com/package/tmi.js) to scan for and detect bot accounts in the chosen channel's chat room.  The userlist is compared with a list of bots on [TwitchInsights](https://twitchinsights.net/bots) and [CommanderRoot](https://twitch-tools.rootonline.de/blocklist_manager.php) and prints detected bot accounts into the terminal window.  Each account is only printed once to reduce spam.
 
 This script can save user data to `user_data/<username>.json` however this is disabled by default.  It also reads the included `botcheck-safe.txt` and `botcheck-marked.txt` to filter out duplicates and false positives from the output.  Saving user data can be easily enabled by including the `--save-data` argument.
 
@@ -33,6 +33,20 @@ The script checks the names on inital boot, when a new message comes in, or when
     $ node tpp-botcheck
     $ node tpp-botcheck --ignore-safe --ignore-marked
     $ node tpp-botcheck --save-data
+
+***
+
+## tpp-pinballcheck.js
+
+This was originaly part of `tpp-botcheck.js` and has been spun off into its own module.  This script is designed to scan for and detect potential bot accounts that are not included in the lists provided by [TwitchInsights](https://twitchinsights.net/bots) or [CommanderRoot](https://twitch-tools.rootonline.de/blocklist_manager.php).  If a prize winner does not follow the channel or has not spoken in chat, their name will be printed into the terminal window.
+
+This script can use the `botcheck-safe.txt` to filter out and ignore false positives.  If the `--ignore-safe` flag is included in the command, the contents of `botcheck-safe.txt` will be ignored.  It is not recommended nor necessary to use this flag and it is provided mostly for debugging purposes.
+
+Due to the high probability of false positives, usage of this script is **NOT RECOMMENDED**.  Additionally, due to third-party usage of Twitch's GraphQL being a violation of Twitch Developer Terms of Service, chat history checking is disabled by default.  Use at your own risk.
+
+    $ node tpp-pinballcheck
+    $ node tpp-pinballcheck --ignore-safe --debug
+    $ node tpp-pinballcheck --save-data
 
 ***
 

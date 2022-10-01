@@ -45,6 +45,7 @@ jspm_packages/
 run_status/
 user_avatars/
 user_data/
+chat_data/
 
 # TypeScript v1 declaration files
 typings/
