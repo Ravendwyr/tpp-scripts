@@ -46,7 +46,7 @@ if (args.includes("--debug")) {
 }
 
 async function queryAPI(name) {
-    var winnerID
+    var winnerID, followsChannel
 
     await fetch(`https://api.ivr.fi/v2/twitch/user?login=${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
     .then(resp => resp.json())
@@ -64,10 +64,9 @@ async function queryAPI(name) {
     .then(resp => resp.json())
     .then(data => {
         if (data && data.total == 0) {
-            printMessage(`"${name}" won a pinball badge but they don't follow the channel.`)
-            notified.push(name)
+            followsChannel = false
         } else if (data.total == 1) {
-            // winner follows the channel; do nothing.
+            followsChannel = true
         } else {
             printMessage(`Invalid data received for ${name}. Please check your oauth.`)
             fs.writeFile(`error-${name}.json`, JSON.stringify(data, null, 4), (err) => { if (err) throw err })
@@ -75,7 +74,6 @@ async function queryAPI(name) {
     })
     .catch(err => printMessage(`Error fetching follows for "${name}" -- ${err}`))
 
-    /*/
     var body = [{
         'operationName': 'ViewerCardModLogsMessagesBySender',
         'variables': {
@@ -98,14 +96,18 @@ async function queryAPI(name) {
     .then(resp => resp.json())
     .then(data => {
         if (data && data[0]["data"]["channel"]["modLogs"]["messagesBySender"]["edges"].length == 0) {
-            printMessage(`"${name}" won a pinball badge but they have not spoken in chat.`)
+            var message
+
+            if (followsChannel) message = `${name} won a pinball badge but they have no chat history.`
+            else message = `${name} won a pinball badge but they don't follow and haven't spoken in chat.`
+
+            printMessage(message)
             notified.push(name)
         }
 
         if (inDebugMode) fs.writeFile(`chat_data/${name}.json`, JSON.stringify(data, null, 4), (err) => { if (err) throw err })
     })
     .catch(err => printMessage(`Error fetching messages for "${name}" -- ${err}`))
-    /*/
 }
 
 // event handlers

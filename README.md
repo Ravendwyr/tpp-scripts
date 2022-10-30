@@ -42,7 +42,7 @@ This was originaly part of `tpp-botcheck.js` and has been spun off into its own 
 
 This script can use the `botcheck-safe.txt` to filter out and ignore false positives.  If the `--ignore-safe` flag is included in the command, the contents of `botcheck-safe.txt` will be ignored.  It is not recommended nor necessary to use this flag and it is provided mostly for debugging purposes.
 
-Due to the high probability of false positives, usage of this script is **NOT RECOMMENDED**.  Additionally, due to third-party usage of Twitch's GraphQL being a violation of Twitch Developer Terms of Service, chat history checking is disabled by default.  Use at your own risk.
+Due to the high probability of false positives, usage of this script is **NOT RECOMMENDED**.
 
     $ node tpp-pinballcheck
     $ node tpp-pinballcheck --ignore-safe --debug
