@@ -1,6 +1,6 @@
 
 // define configuration options
-require('dotenv').config({ path: './.env' })
+require('dotenv').config()
 
 const fetch = require('node-fetch-retry')
 const fs = require('graceful-fs')
