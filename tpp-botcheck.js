@@ -19,10 +19,10 @@ var previousName = ""
 var timer
 
 function addToQueue(name) {
-    if (queue.includes(name) || name == previousName || name == "tpp") return
+    if (queue.includes(name) || name == previousName || name == "tpp" || name == "tppsimulator") return
     else queue.push(name)
 
-    if (!timer) timer = setInterval(() => { if (queue.length > 0) queryIVR(queue.splice(0, 1)[0]) }, 350)
+    if (!timer) timer = setInterval(() => { if (queue.length > 0) queryIVR(queue.splice(0, 1)[0]) }, 500)
 }
 
 // build our bot list
