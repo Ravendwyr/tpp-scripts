@@ -25,6 +25,10 @@ function addToQueue(name) {
     if (!timer) timer = setInterval(() => { if (queue.length > 0) queryIVR(queue.splice(0, 1)[0]) }, 500)
 }
 
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+}
+
 // build our bot list
 var safeList = []
 var notified = []
@@ -161,10 +165,10 @@ function printMessage(message) {
 
 // event handlers
 function onConnectedHandler(address, port) {
-    printMessage(`There are ${idList.length} IDs in CommanderRoot's bot list.`)
-    printMessage(`There are ${botList.length} names in the master bot list.`)
-    printMessage(`There are ${notified.length} names in the marked list.`)
-    printMessage(`There are ${safeList.length} names in the safe list.`)
+    printMessage(`There are ${numberWithCommas(idList.length)} IDs in CommanderRoot's bot list.`)
+    printMessage(`There are ${numberWithCommas(botList.length)} names in the master bot list.`)
+    printMessage(`There are ${numberWithCommas(notified.length)} names in the marked list.`)
+    printMessage(`There are ${numberWithCommas(safeList.length)} names in the safe list.`)
 }
 
 function onMessageHandler(channel, userdata, message, self) {
