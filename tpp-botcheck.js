@@ -53,7 +53,7 @@ function fetchFromTwitchInsights() {
     .then(data => {
         data["bots"].forEach(row => {
             var name = row[0].toLowerCase().trim()
-            if (!botList.includes(name)) botList.push(name)
+            if (name != "" && !botList.includes(name)) botList.push(name)
         })
 
         printMessage("Finished downloading from TwitchInsights.")
@@ -68,7 +68,7 @@ function fetchFromArrowgent() {
     .then(data => {
         data.split(/\n/).forEach(row => {
             var name = row.toLowerCase().trim()
-            if (!botList.includes(name)) botList.push(name)
+            if (name != "" && !botList.includes(name)) botList.push(name)
         })
 
         printMessage("Finished downloading from Arrowgent.")
@@ -83,7 +83,7 @@ function fetchFromFrankerFaceZ() {
     .then(data => {
         data["users"][2].forEach(row => {
             var name = row.toLowerCase().trim()
-            if (!botList.includes(name)) botList.push(name)
+            if (name != "" && !botList.includes(name)) botList.push(name)
         })
 
         printMessage("Finished downloading from FrankerFaceZ.")
