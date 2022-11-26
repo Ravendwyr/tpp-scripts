@@ -63,12 +63,17 @@ function fetchFromTwitchInsights() {
 }
 
 function fetchFromArrowgent() {
-    fetch('https://raw.githubusercontent.com/arrowgent/Twitchtv-Bots-List/main/list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying Arrowgent's list...`) })
-    .then(data => data.text())
+    Promise.all([
+        fetch('https://raw.githubusercontent.com/arrowgent/Twitchtv-Bots-List/main/list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(data => data.text()),
+        fetch('https://raw.githubusercontent.com/arrowgent/Twitchtv-Bots-List/main/goodbot.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(data => data.text()),
+    ])
     .then(data => {
-        data.split(/\n/).forEach(row => {
-            var name = row.toLowerCase().trim()
-            if (name != "" && !botList.includes(name)) botList.push(name)
+        // 'data' is an array and its .length is equivalent to the number number of queries in .all() above
+        data.forEach(names => {
+            names.split(/\n/).forEach(row => {
+                var name = row.toLowerCase().trim()
+                if (name != "" && !botList.includes(name)) botList.push(name)
+            })
         })
 
         printMessage("Finished downloading from Arrowgent.")
