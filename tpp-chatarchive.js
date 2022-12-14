@@ -1,5 +1,7 @@
 
 // define configuration options
+require('dotenv').config()
+
 const fetch = require('node-fetch-retry')
 const fs = require('graceful-fs')
 
@@ -28,7 +30,7 @@ async function run() {
             mode: 'cors',
             headers: {
                 'Client-Id': 'kimne78kx3ncx6brgo4mv6wki5h1ko',
-                'Authorization': `OAuth chrome://settings/cookies/detail?site=twitch.tv`,
+                'Authorization': `OAuth ${process.env.GRAPHQL_OAUTH}`,
                 'Content-Type': 'text/plain;charset=UTF-8',
             },
             body: JSON.stringify(body),

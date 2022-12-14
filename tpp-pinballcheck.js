@@ -91,7 +91,7 @@ async function queryAPI(name) {
 
     await fetch(`https://gql.twitch.tv/gql`, {
         method: 'POST', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s message history...`),
-        body: JSON.stringify(body), headers: { 'Authorization': `OAuth chrome://settings/cookies/detail?site=twitch.tv`, 'Client-Id': 'kimne78kx3ncx6brgo4mv6wki5h1ko' }
+        body: JSON.stringify(body), headers: { 'Authorization': `OAuth ${process.env.GRAPHQL_OAUTH}`, 'Client-Id': 'kimne78kx3ncx6brgo4mv6wki5h1ko' }
     })
     .then(resp => resp.json())
     .then(data => {

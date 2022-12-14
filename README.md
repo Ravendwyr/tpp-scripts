@@ -14,7 +14,7 @@ Then make sure the necessary libraries are installed.
     $ cd tpp-scripts
     $ npm install
 
-Optional but recommended: some of these scripts can use a Client ID from a [Twitch App](https://dev.twitch.tv/console) alongside an [OAuth Key](https://twitchtokengenerator.com/) linked to the Twitch App for ratelimiting purposes.  These keys can be stored in the provided `.env` file prior to launching the scripts.
+Optional but recommended: some of these scripts can use a Client ID from a [Twitch App](https://dev.twitch.tv/console) alongside an [OAuth Key](https://twitchtokengenerator.com/) linked to the Twitch App for ratelimiting purposes, while others can make use of your [auth-key cookie](chrome://settings/cookies/detail?site=twitch.tv) to access Twitch's GraphQL systems.  These keys can be stored in the provided `.env` file prior to launching the scripts.
 
 These scripts have been built and tested with [Node 12](https://nodejs.org/dist/latest-v12.x/), however other versions may still work.
 
