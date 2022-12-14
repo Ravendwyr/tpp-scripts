@@ -8,7 +8,7 @@ const tmi = require('tmi.js')
 const fs = require('graceful-fs')
 
 // create a client with our options
-const client = new tmi.client({
+const client = new tmi.Client({
     identity: { username: "justinfan1986", password: "kappa" },
     channels: [ "twitchplayspokemon" ],
 })

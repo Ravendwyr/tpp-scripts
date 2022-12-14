@@ -6,7 +6,7 @@ const cache = {}
 const focus = process.argv.slice(2)
 
 // create a client with our options
-const client = new tmi.client({
+const client = new tmi.Client({
     identity: { username: "justinfan1986", password: "kappa" },
     channels: [ "twitchplayspokemon" ],
 })
