@@ -86,7 +86,7 @@ This script runs once and terminates itself after it has finished looking throug
 
 ## tpp-chatarchive.js
 
-Inspired by ~~and blatantly stolen from~~ [@tonywu7's chat archiver](https://github.com/tonywu7/doug-district-public-library/blob/master/util/chat-archiver-v0.1.js), this script will query Twitch's GraphQL for the provided user's entire chat history ~~since records began in early 2019~~ and will attempt to convert it into a human readable format for archival and moderation purposes, sorted chronologically with the most recent messages at the top.  Timestamps for timeouts and bans are also included.
+Inspired by ~~and blatantly stolen from~~ [@tonywu7's chat archiver](https://github.com/tonywu7/doug-district-public-library/blob/master/util/chat-archiver-v0.1.js), this script will query Twitch's GraphQL for the provided user's entire chat history ~~since records began in late 2017~~ and will attempt to convert it into a human readable format for archival and moderation purposes, sorted chronologically with the most recent messages at the top.  Timestamps for timeouts and bans are also included.
 
 Be warned that the more the user has spoken in chat, the longer it will take and the larger the output file will be.  For instance, a user with 400 messages will only take a few seconds to download a 23Kb file whereas a user with over 135,000 messages will take the best part of 15 minutes to download a 6,700Kb file.  Also note that historic name changes are not provided by Twitch and will not be reflected in the output.
 
