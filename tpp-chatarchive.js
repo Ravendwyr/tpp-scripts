@@ -38,22 +38,9 @@ async function run() {
     }
 
     async function getUserId() {
-        let res = await fetch('https://gql.twitch.tv/gql',
-            requestTemplate([
-                {
-                    operationName: 'GetUserID',
-                    variables: { login: username, lookupType: 'ACTIVE' },
-                    extensions: {
-                        persistedQuery: {
-                            version: 1,
-                            sha256Hash: 'bf6c594605caa0c63522f690156aa04bd434870bf963deb76668c381d16fcaa5',
-                        },
-                    },
-                },
-            ])
-        )
+        let res = await fetch(`https://api.ivr.fi/v2/twitch/user?login=${username}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${username}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
         let data = (await res.json())[0]
-        if (data.data.user) return data.data.user.id
+        if (data) return data.id
     }
 
     function msgFetchTemplate(userId, cursor = null) {
@@ -119,7 +106,7 @@ async function run() {
         const outputFile = fs.createWriteStream(`chat_data/${username}.txt`, { flags: 'a' })
 
         for (let line = 0; line < __messages.length; line++) {
-            if (__messages[line].node.sentAt) outputFile.write(`${__messages[line].node.sentAt.padEnd(30, ' ')} [${__messages[line].node.sender.login}]: ${__messages[line].node.content.text}\n`)
+            if (__messages[line].node.sentAt) outputFile.write(`${__messages[line].node.sentAt.padEnd(30, ' ')} [${__messages[line].node.sender ? __messages[line].node.sender.login : username}]: ${__messages[line].node.content.text}\n`)
             if (__messages[line].node.timestamp) outputFile.write(`${__messages[line].node.timestamp.padEnd(30, ' ')} #${__messages[line].node.action} ${__messages[line].node.details.durationSeconds || "infinite"} seconds - ${__messages[line].node.details.reason || "no reason provided"}\n`)
         }
 
