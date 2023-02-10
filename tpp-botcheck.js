@@ -13,16 +13,16 @@ const client = new tmi.Client({
 })
 
 // throttle queries. we don't want to thrash the servers too much.
+const queriedRecently = []
 const queue = []
 
-var previousName = ""
 var timer
 
 function addToQueue(name) {
-    if (queue.includes(name) || name == previousName || name == "tpp" || name == "tppsimulator") return
+    if (queue.includes(name) || queriedRecently[name] || name == "tpp" || name == "tppsimulator") return
     else queue.push(name)
 
-    if (!timer) timer = setInterval(() => { if (queue.length > 0) queryIVR(queue.splice(0, 1)[0]) }, 500)
+    if (!timer) timer = setInterval(() => { if (queue.length > 0) queryIVR(queue.splice(0, 1)[0]) }, 2000)
 }
 
 function numberWithCommas(x) {
@@ -122,7 +122,7 @@ if (args.includes("--save-data")) {
 }
 
 function queryIVR(name) {
-    previousName = name
+    queriedRecently[name] = setTimeout(() => queriedRecently[name] = null, 180000)
 
     fetch(`https://api.ivr.fi/v2/twitch/user?login=${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
     .then(user => user.json())
