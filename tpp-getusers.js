@@ -29,6 +29,8 @@ function addToQueue(name) {
 // gather the goods
 var isSavingData = false
 
+if (!fs.existsSync("user_avatars")) fs.mkdirSync("user_avatars")
+
 if (args.includes("--save-data")) {
     if (!fs.existsSync("user_data")) fs.mkdirSync("user_data")
     isSavingData = true
@@ -69,11 +71,6 @@ function printMessage(message) {
 }
 
 // event handlers
-function onConnectedHandler(address, port) {
-    if (!fs.existsSync("user_avatars")) fs.mkdirSync("user_avatars")
-    printMessage(`Connected to ${address}:${port}`)
-}
-
 function onMessageHandler(channel, userdata, message, self) {
     addToQueue(userdata.username)
 }
@@ -95,5 +92,4 @@ client.on('join', onJoinHandler)
 client.on('part', onPartHandler)
 client.on('names', onNamesHandler)
 client.on('message', onMessageHandler)
-client.on('connected', onConnectedHandler)
 client.connect().catch(() => printMessage(`Unable to connect to chat. Please confirm your oauth token is correct.`))

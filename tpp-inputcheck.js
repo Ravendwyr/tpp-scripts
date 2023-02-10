@@ -17,10 +17,6 @@ function printMessage(message) {
 }
 
 // event handlers
-function onConnectedHandler(address, port) {
-    printMessage(`Connected to ${address}:${port}`)
-}
-
 function onMessageHandler(channel, userdata, message, self) {
     const name = userdata.username
 
@@ -49,5 +45,4 @@ function onMessageHandler(channel, userdata, message, self) {
 
 // engage
 client.on('message', onMessageHandler)
-client.on('connected', onConnectedHandler)
 client.connect().catch(() => printMessage(`Unable to connect to chat. Please confirm your oauth token is correct.`))
