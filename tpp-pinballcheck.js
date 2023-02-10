@@ -27,7 +27,7 @@ if (!args.includes("--ignore-safe")) {
     fs.readFile("botcheck-safe.txt", 'utf8', (err, data) => {
         if (err) throw err
 
-        data.split(/\r\n/g).forEach(row => { if (row != "") safeList.push(row) })
+        data.split(/\n/g).forEach(row => { if (row != "") safeList.push(row.toLowerCase().replace("\r", "").trim()) })
     })
 }
 
