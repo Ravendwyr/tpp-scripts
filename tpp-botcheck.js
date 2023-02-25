@@ -165,6 +165,11 @@ function printMessage(message) {
 
 // event handlers
 function onConnectedHandler(address, port) {
+    if (isSavingData) {
+        fs.writeFile(`__list__.json`, JSON.stringify(botList, null, 4), (err) => { if (err) throw err })
+        fs.writeFile(`__root__.json`, JSON.stringify(idList, null, 4), (err) => { if (err) throw err })
+    }
+
     printMessage(`There are ${numberWithCommas(idList.length)} IDs in CommanderRoot's bot list.`)
     printMessage(`There are ${numberWithCommas(botList.length)} names in the master bot list.`)
     printMessage(`There are ${numberWithCommas(notified.length)} names in the marked list.`)
