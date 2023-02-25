@@ -39,7 +39,7 @@ if (!args.includes("--ignore-safe")) {
 fs.readFile("botcheck-safe.txt", 'utf8', (err, data) => {
     if (err) throw err
 
-    data.split(/\n/g).forEach(row => { if (row != "") safeList.push(row.toLowerCase().replace("\r", "").trim()) })
+    data.split(/\r?\n/i).forEach(row => { if (row != "") safeList.push(row.toLowerCase().trim()) })
 })
 }
 
@@ -47,7 +47,7 @@ if (!args.includes("--ignore-marked")) {
 fs.readFile("botcheck-marked.txt", 'utf8', (err, data) => {
     if (err) throw err
 
-    data.split(/\n/g).forEach(row => { if (row != "") notified.push(row.toLowerCase().replace("\r", "").trim()) })
+    data.split(/\r?\n/i).forEach(row => { if (row != "") notified.push(row.toLowerCase().trim()) })
 })
 }
 
@@ -74,7 +74,7 @@ function fetchFromArrowgent() {
     .then(data => {
         // 'data' is an array and its .length is equivalent to the number number of queries in .all() above
         data.forEach(names => {
-            names.split(/\n/g).forEach(row => {
+            names.split(/\r?\n/i).forEach(row => {
                 var name = row.toLowerCase().trim()
                 if (name != "" && !botList.includes(name)) botList.push(name)
             })
