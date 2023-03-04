@@ -103,7 +103,7 @@ async function run() {
         //fs.writeFile(`chat_data/${username}-raw.json`, JSON.stringify(__messages, null, 4), err => { if (err) throw err })
 
         if (fs.existsSync(`chat_data/${username}.txt`)) fs.unlinkSync(`chat_data/${username}.txt`)
-        const outputFile = fs.createWriteStream(`chat_data/${username}.txt`, { flags: 'a' })
+        const outputFile = fs.createWriteStream(`chat_data/${username}.txt`)
 
         for (let line = 0; line < __messages.length; line++) {
             if (__messages[line].node.sentAt) outputFile.write(`${__messages[line].node.sentAt.padEnd(30, ' ')} [${__messages[line].node.sender ? __messages[line].node.sender.login : username}]: ${__messages[line].node.content.text}\n`)
