@@ -48,7 +48,7 @@ if (args.includes("--debug")) {
 async function queryAPI(name) {
     var winnerID, followsChannel
 
-    await fetch(`https://api.ivr.fi/v2/twitch/user?login=${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
+    await fetch(`https://api.ivr.fi/v2/twitch/user?login=${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
     .then(resp => resp.json())
     .then(user => {
         if (!user || user.length != 1) return
@@ -60,7 +60,7 @@ async function queryAPI(name) {
 
     if (safeList.includes(name) || notified.includes(name)) return
 
-    await fetch(`https://api.twitch.tv/helix/users/follows?from_id=${winnerID}&to_id=56648155`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s follows...`), headers: { 'Authorization': `Bearer ${process.env.TWITCH_OAUTH}`, 'Client-Id': process.env.TWITCH_CLIENTID } })
+    await fetch(`https://api.twitch.tv/helix/users/follows?from_id=${winnerID}&to_id=56648155`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Authorization': `Bearer ${process.env.TWITCH_OAUTH}`, 'Client-Id': process.env.TWITCH_CLIENTID } })
     .then(resp => resp.json())
     .then(data => {
         if (data && data.total == 0) {
@@ -90,7 +90,7 @@ async function queryAPI(name) {
     }]
 
     await fetch(`https://gql.twitch.tv/gql`, {
-        method: 'POST', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s message history...`),
+        method: 'POST', retry: 3, pause: 1000, silent: true,
         body: JSON.stringify(body), headers: { 'Authorization': `OAuth ${process.env.GRAPHQL_OAUTH}`, 'Client-Id': 'kimne78kx3ncx6brgo4mv6wki5h1ko' }
     })
     .then(resp => resp.json())

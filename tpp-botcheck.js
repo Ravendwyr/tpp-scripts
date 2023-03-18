@@ -52,7 +52,7 @@ fs.readFile("botcheck-marked.txt", 'utf8', (err, data) => {
 }
 
 function fetchFromTwitchInsights() {
-    fetch(`https://api.twitchinsights.net/v1/bots/all`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying TwitchInsights list...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
+    fetch(`https://api.twitchinsights.net/v1/bots/all`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
     .then(data => data.json())
     .then(data => {
         data["bots"].forEach(row => {
@@ -124,7 +124,7 @@ if (args.includes("--save-data")) {
 function queryIVR(name) {
     queriedRecently[name] = setTimeout(() => queriedRecently[name] = null, 180000)
 
-    fetch(`https://api.ivr.fi/v2/twitch/user?login=${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
+    fetch(`https://api.ivr.fi/v2/twitch/user?login=${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
     .then(user => user.json())
     .then(user => {
         if (!user || user.length != 1) return

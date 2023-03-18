@@ -38,7 +38,7 @@ async function run() {
     }
 
     async function getUserId() {
-        let res = await fetch(`https://api.ivr.fi/v2/twitch/user?login=${username}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${username}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
+        let res = await fetch(`https://api.ivr.fi/v2/twitch/user?login=${username}`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
         let data = (await res.json())[0]
         if (data) return data.id
     }

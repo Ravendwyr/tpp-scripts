@@ -39,7 +39,7 @@ if (args.includes("--save-data")) {
 function getUserData(name) {
     previousName = name
 
-    fetch(`https://api.ivr.fi/v2/twitch/user?login=${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s data...`), headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
+    fetch(`https://api.ivr.fi/v2/twitch/user?login=${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
     .then(user => user.json())
     .then(user => {
         if (!user || user.length != 1) return
@@ -49,7 +49,7 @@ function getUserData(name) {
         if (user[0].logo.includes("user-default-pictures")) return
 
         // download the user's profile pic
-        fetch(user[0].logo, { method: 'GET', retry: 3, pause: 1000, silent: true, callback: retry => printMessage(`Retrying ${name}'s profile pic...`)})
+        fetch(user[0].logo, { method: 'GET', retry: 3, pause: 1000, silent: true })
         .then(response => response.buffer())
         .then(buffer => {
             if (!buffer) return
