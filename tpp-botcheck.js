@@ -66,8 +66,9 @@ function fetchFromTwitchInsights() {
     .catch(err => printMessage(`Error while downloading TwitchInsights list -- ${err}`))
 }
 
-function fetchFromArrowgent() {
+function fetchFromGitHub() {
     Promise.all([
+        fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/LATEST', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(data => data.text()),
         fetch('https://raw.githubusercontent.com/arrowgent/Twitchtv-Bots-List/main/list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(data => data.text()),
         fetch('https://raw.githubusercontent.com/arrowgent/Twitchtv-Bots-List/main/goodbot.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(data => data.text()),
     ])
@@ -80,10 +81,10 @@ function fetchFromArrowgent() {
             })
         })
 
-        printMessage("Finished downloading from Arrowgent.")
+        printMessage("Finished downloading from GitHub.")
         fetchFromTwitchInsights()
     })
-    .catch(err => printMessage(`Error while downloading Arrowgent's list -- ${err}`))
+    .catch(err => printMessage(`Error while downloading GitHub list -- ${err}`))
 }
 
 function fetchFromFrankerFaceZ() {
@@ -96,7 +97,7 @@ function fetchFromFrankerFaceZ() {
         })
 
         printMessage("Finished downloading from FrankerFaceZ.")
-        fetchFromArrowgent()
+        fetchFromGitHub()
     })
     .catch(err => printMessage(`Error while downloading FrankerFaceZ's list -- ${err}`))
 }
