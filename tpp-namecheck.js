@@ -1,7 +1,6 @@
 
 // define configuration options
 const directory = './user_data/'
-const path = require('path')
 const fs = require('graceful-fs')
 
 // build our user list
@@ -13,8 +12,9 @@ function printMessage(message) {
 }
 
 // gather the goods
-fs.readdirSync(directory).forEach(file => {
-    if (!fs.lstatSync(path.resolve(directory, file)).isDirectory()) {
+fs.readdir(directory, (err, files) => {
+    if (err) throw err
+    else files.forEach(file => {
         fs.readFile(directory+file, 'utf8', (err, data) => {
             if (err) throw err
 
@@ -24,5 +24,5 @@ fs.readdirSync(directory).forEach(file => {
             if (userIDs[id]) printMessage(`User ID ${id} clash - ${userIDs[id]} vs ${user.login}`)
             else userIDs[id] = user.login
         })
-    }
+    })
 })
