@@ -71,6 +71,7 @@ function fetchFromGitHub() {
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/LATEST', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(data => data.text()),
         fetch('https://raw.githubusercontent.com/arrowgent/Twitchtv-Bots-List/main/list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(data => data.text()),
         fetch('https://raw.githubusercontent.com/arrowgent/Twitchtv-Bots-List/main/goodbot.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(data => data.text()),
+        fetch('https://raw.githubusercontent.com/paret0x/Twitch-Bot-Finder/main/botlist.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(data => data.text()),
     ])
     .then(data => {
         // 'data' is an array and its .length is equivalent to the number number of queries in .all() above
