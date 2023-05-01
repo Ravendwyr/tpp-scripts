@@ -81,6 +81,7 @@ function fetchFromGitHub() {
         fetch('https://raw.githubusercontent.com/mdgdevsecurity/twitch_ban_list/main/streamsniper_list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(data => data.text()),
         fetch('https://raw.githubusercontent.com/mdgdevsecurity/twitch_ban_list/main/viewer_bot_list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(data => data.text()),
         fetch('https://raw.githubusercontent.com/mdgdevsecurity/twitch_ban_list/main/whitelisted_bots.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(data => data.text()),
+        fetch('https://raw.githubusercontent.com/kirakenjiro/twitchaccountchecker/main/list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(data => data.text()),
     ])
     .then(data => {
         // 'data' is an array and its .length is equivalent to the number number of queries in .all() above
