@@ -32,6 +32,8 @@ async function run() {
                 'Client-Id': 'kimne78kx3ncx6brgo4mv6wki5h1ko',
                 'Authorization': `OAuth ${process.env.GRAPHQL_OAUTH}`,
                 'Content-Type': 'text/plain;charset=UTF-8',
+                'Client-Integrity': `${process.env.GRAPHQL_INTEGRITY}`,
+                'X-Device-Id': `${process.env.GRAPHQL_DEVICEID}`,
             },
             body: JSON.stringify(body),
         }
@@ -49,13 +51,13 @@ async function run() {
                 operationName: 'ViewerCardModLogsMessagesBySender',
                 variables: {
                     senderID: userId,
-                    channelLogin: 'twitchplayspokemon',
+                    channelID: '56648155',
                     cursor: cursor,
                 },
                 extensions: {
                     persistedQuery: {
                         version: 1,
-                        sha256Hash: '437f209626e6536555a08930f910274528a8dea7e6ccfbef0ce76d6721c5d0e7',
+                        sha256Hash: 'c634d7fadf4453103f4047a102ca2c4b0da4ada0330741bd80ae527c2c958513',
                     },
                 },
             },
@@ -65,7 +67,7 @@ async function run() {
     async function processPayload(response) {
         let payload = await response.json()
         let data = payload[0]
-        return data.data.channel.modLogs.messagesBySender.edges
+        return data.data.viewerCardModLogs.messages
     }
 
     function getCursor(edges) {
@@ -86,14 +88,13 @@ async function run() {
     while (true) {
         let req = msgFetchTemplate(userId, cursor)
         let msgs = await processPayload(await fetch('https://gql.twitch.tv/gql', req))
-        __messages.push(...msgs)
-        try {
-            cursor = getCursor(msgs)
-        } catch (e) {
+        __messages.push(...msgs.edges)
+        printMessage(`Found ${numberWithCommas(__messages.length)} messages so far...`)
+        if (msgs.pageInfo.hasNextPage) cursor = getCursor(msgs.edges)
+        else {
             printMessage('End of data stream. Tidying up...')
             break
         }
-        printMessage(`Found ${numberWithCommas(__messages.length)} messages so far...`)
     }
 
     if (__messages.length > 0) {
@@ -107,7 +108,7 @@ async function run() {
 
         for (let line = 0; line < __messages.length; line++) {
             if (__messages[line].node.sentAt) outputFile.write(`${__messages[line].node.sentAt.padEnd(30, ' ')} [${__messages[line].node.sender ? __messages[line].node.sender.login : username}]: ${__messages[line].node.content.text}\n`)
-            if (__messages[line].node.timestamp) outputFile.write(`${__messages[line].node.timestamp.padEnd(30, ' ')} #${__messages[line].node.action} ${__messages[line].node.details.durationSeconds || "infinite"} seconds - ${__messages[line].node.details.reason || "no reason provided"}\n`)
+            //if (__messages[line].node.timestamp) outputFile.write(`${__messages[line].node.timestamp.padEnd(30, ' ')} #${__messages[line].node.action} ${__messages[line].node.details.durationSeconds || "infinite"} seconds - ${__messages[line].node.details.reason || "no reason provided"}\n`)
         }
 
         printMessage('Chat archive saved to file. Stopping...')
