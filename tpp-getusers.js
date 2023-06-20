@@ -16,8 +16,8 @@ const client = new tmi.Client({
 // throttle queries. we don't want to thrash the servers too much.
 const queue = []
 
-var previousName = ""
-var timer
+let previousName = ""
+let timer
 
 function addToQueue(name) {
     if (queue.includes(name) || name == previousName || name == "tpp" || name == "tppsimulator") return
@@ -27,7 +27,7 @@ function addToQueue(name) {
 }
 
 // gather the goods
-var isSavingData = false
+let isSavingData = false
 
 if (!fs.existsSync("user_avatars")) fs.mkdirSync("user_avatars")
 

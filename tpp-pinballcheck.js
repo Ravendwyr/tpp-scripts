@@ -20,8 +20,8 @@ function printMessage(message) {
 }
 
 // build our bot list
-var safeList = []
-var notified = []
+const safeList = []
+const notified = []
 
 if (!args.includes("--ignore-safe")) {
     fs.readFile("botcheck-safe.txt", 'utf8', (err, data) => {
@@ -32,8 +32,8 @@ if (!args.includes("--ignore-safe")) {
 }
 
 // gather the goods
-var isSavingData = false
-var inDebugMode = false
+let isSavingData = false
+let inDebugMode = false
 
 if (args.includes("--save-data")) {
     if (!fs.existsSync("user_data")) fs.mkdirSync("user_data")
@@ -46,7 +46,7 @@ if (args.includes("--debug")) {
 }
 
 async function queryAPI(name) {
-    var winnerID, followsChannel
+    let winnerID, followsChannel
 
     await fetch(`https://api.ivr.fi/v2/twitch/user?login=${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
     .then(resp => resp.json())
@@ -74,7 +74,7 @@ async function queryAPI(name) {
     })
     .catch(err => printMessage(`Error fetching follows for "${name}" -- ${err}`))
 
-    var body = [{
+    const body = [{
         'operationName': 'ViewerCardModLogsMessagesBySender',
         'variables': {
             'senderID': winnerID,
@@ -114,12 +114,12 @@ async function queryAPI(name) {
 
 // event handlers
 function onMessageHandler(channel, userdata, message, self) {
-    var name = userdata.username
+    const name = userdata.username
 
     if (notified.includes(name)) printMessage(`"${name}" is in the marked list but they just sent a message.`)
 
     if (name === "tpp" && message.includes("badge from pinball")) {
-        var winner = message.substring(message.indexOf("@") +1, message.indexOf(" ")).toLowerCase()
+        const winner = message.substring(message.indexOf("@") +1, message.indexOf(" ")).toLowerCase()
         queryAPI(winner)
     } //else if (inDebugMode) queryAPI(userdata.username)
 }

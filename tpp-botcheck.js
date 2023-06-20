@@ -16,7 +16,7 @@ const client = new tmi.Client({
 const queriedRecently = []
 const queue = []
 
-var timer
+let timer
 
 function addToQueue(name) {
     if (queue.includes(name) || queriedRecently[name] || name == "tpp" || name == "tppsimulator") return
@@ -39,10 +39,10 @@ function checkPayload(data) {
 }
 
 // build our bot list
-var safeList = []
-var notified = []
-var botList  = []
-var idList   = []
+const safeList = []
+const notified = []
+const botList  = []
+const idList   = []
 
 if (!args.includes("--ignore-safe")) {
 fs.readFile("botcheck-safe.txt", 'utf8', (err, data) => {
@@ -65,7 +65,7 @@ function fetchFromTwitchInsights() {
     .then(data => data.json())
     .then(data => {
         data["bots"].forEach(row => {
-            var name = row[0].toLowerCase().trim()
+            const name = row[0].toLowerCase().trim()
             addToList(name)
         })
 
@@ -99,7 +99,7 @@ function fetchFromGitHub() {
         // 'data' is an array and its .length is equivalent to the number number of queries in .all() above
         data.forEach(names => {
             names.split(/\r?\n/i).forEach(row => {
-                var name = row.toLowerCase().trim()
+                const name = row.toLowerCase().trim()
                 addToList(name)
             })
         })
@@ -115,7 +115,7 @@ function fetchFromFrankerFaceZ() {
     .then(data => data.json())
     .then(data => {
         data["users"][2].forEach(row => {
-            var name = row.toLowerCase().trim()
+            const name = row.toLowerCase().trim()
             addToList(name)
         })
 
@@ -138,7 +138,7 @@ function fetchFromCommanderRoot() {
 }
 
 // gather the goods
-var isSavingData = false
+let isSavingData = false
 
 if (args.includes("--save-data")) {
     if (!fs.existsSync("user_data")) fs.mkdirSync("user_data")
@@ -196,7 +196,7 @@ function onConnectedHandler(address, port) {
 }
 
 function onMessageHandler(channel, userdata, message, self) {
-    var name = userdata.username
+    const name = userdata.username
 
     if (notified.includes(name)) {
         printMessage(`"${name}" is in the marked list but they just sent a message.`)

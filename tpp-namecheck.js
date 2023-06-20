@@ -18,8 +18,8 @@ fs.readdir(directory, (err, files) => {
         fs.readFile(directory+file, 'utf8', (err, data) => {
             if (err) throw err
 
-            var user = JSON.parse(data)
-            var id = user.id
+            const user = JSON.parse(data)
+            const id = user.id
 
             if (userIDs[id]) printMessage(`User ID ${id} clash - ${userIDs[id]} vs ${user.login}`)
             else userIDs[id] = user.login

@@ -23,15 +23,15 @@ function onMessageHandler(channel, userdata, message, self) {
     if (name === "tpp" || name === "tppsimulator") return
     if (focus.length > 0 && !focus.includes(name)) return
 
-    var currTime = new Date().getTime()
-    var prevTime
+    const currTime = new Date().getTime()
+    let prevTime
 
     if (cache[name]) {
         prevTime = cache[name]
 
-        var millis  = currTime - prevTime
-        var minutes = Math.floor((millis / 60000))
-        var seconds = ((millis % 60000) / 1000)
+        let millis  = currTime - prevTime
+        let minutes = Math.floor((millis / 60000))
+        let seconds = ((millis % 60000) / 1000)
 
         if (minutes > 0) {
             printMessage(`${name}'s last message was ${minutes} minutes and ${seconds} seconds ago.`)

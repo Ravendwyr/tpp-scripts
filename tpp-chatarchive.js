@@ -40,8 +40,8 @@ async function run() {
     }
 
     async function getUserId() {
-        let res = await fetch(`https://api.ivr.fi/v2/twitch/user?login=${username}`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
-        let data = (await res.json())[0]
+        const res = await fetch(`https://api.ivr.fi/v2/twitch/user?login=${username}`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
+        const data = (await res.json())[0]
         if (data) return data.id
     }
 
@@ -65,8 +65,8 @@ async function run() {
     }
 
     async function processPayload(response) {
-        let payload = await response.json()
-        let data = payload[0]
+        const payload = await response.json()
+        const data = payload[0]
         return data.data.viewerCardModLogs.messages
     }
 
@@ -74,9 +74,9 @@ async function run() {
         return edges[edges.length - 1].cursor
     }
 
-    var __messages = []
+    const __messages = []
     let cursor = null
-    let userId = await getUserId()
+    const userId = await getUserId()
 
     if (userId) {
         printMessage(`Found user ${username} with ID ${userId}. Continuing...`)
@@ -86,8 +86,8 @@ async function run() {
     }
 
     while (true) {
-        let req = msgFetchTemplate(userId, cursor)
-        let msgs = await processPayload(await fetch('https://gql.twitch.tv/gql', req))
+        const req = msgFetchTemplate(userId, cursor)
+        const msgs = await processPayload(await fetch('https://gql.twitch.tv/gql', req))
         __messages.push(...msgs.edges)
         printMessage(`Found ${numberWithCommas(__messages.length)} messages so far...`)
         if (msgs.pageInfo.hasNextPage) cursor = getCursor(msgs.edges)
