@@ -25,6 +25,10 @@ function addToQueue(name) {
     if (!timer) timer = setInterval(() => { if (queue.length > 0) queryIVR(queue.splice(0, 1)[0]) }, 2000)
 }
 
+function addToList(name) {
+    if (/^\w+$/.test(name) && !name.startsWith("_") && !botList.includes(name)) botList.push(name)
+}
+
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 }
@@ -62,7 +66,7 @@ function fetchFromTwitchInsights() {
     .then(data => {
         data["bots"].forEach(row => {
             var name = row[0].toLowerCase().trim()
-            if (name != "" && !botList.includes(name)) botList.push(name)
+            addToList(name)
         })
 
         printMessage("Finished downloading from TwitchInsights.")
@@ -86,6 +90,7 @@ function fetchFromGitHub() {
         fetch('https://raw.githubusercontent.com/TwitchmodsDACH/Bannlisten/main/isds_seller_advertising_list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/TwitchmodsDACH/Bannlisten/main/isds_spam_bot_list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/TwitchmodsDACH/Bannlisten/main/isds_streamsniper_list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
+        fetch('https://raw.githubusercontent.com/TwitchmodsDACH/Bannlisten/main/isds_unbanlist.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/TwitchmodsDACH/Bannlisten/main/isds_viewer_bot_list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/TwitchmodsDACH/Bannlisten/main/isds_whitelisted_bots.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/kirakenjiro/twitchaccountchecker/main/list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
@@ -95,7 +100,7 @@ function fetchFromGitHub() {
         data.forEach(names => {
             names.split(/\r?\n/i).forEach(row => {
                 var name = row.toLowerCase().trim()
-                if (name != "" && !botList.includes(name)) botList.push(name)
+                addToList(name)
             })
         })
 
@@ -111,7 +116,7 @@ function fetchFromFrankerFaceZ() {
     .then(data => {
         data["users"][2].forEach(row => {
             var name = row.toLowerCase().trim()
-            if (name != "" && !botList.includes(name)) botList.push(name)
+            addToList(name)
         })
 
         printMessage("Finished downloading from FrankerFaceZ.")
