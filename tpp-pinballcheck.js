@@ -78,25 +78,27 @@ async function queryAPI(name) {
         'operationName': 'ViewerCardModLogsMessagesBySender',
         'variables': {
             'senderID': winnerID,
-            'channelLogin': 'twitchplayspokemon',
-            'includeAutoModCaughtMessages': true,
+            'channelID': '56648155',
         },
         'extensions': {
             'persistedQuery': {
                 'version': 1,
-                'sha256Hash': '437f209626e6536555a08930f910274528a8dea7e6ccfbef0ce76d6721c5d0e7'
+                'sha256Hash': 'c634d7fadf4453103f4047a102ca2c4b0da4ada0330741bd80ae527c2c958513'
             },
         },
     }]
 
     await fetch(`https://gql.twitch.tv/gql`, {
-        method: 'POST', retry: 3, pause: 1000, silent: true,
-        body: JSON.stringify(body), headers: { 'Authorization': `OAuth ${process.env.GRAPHQL_OAUTH}`, 'Client-Id': 'kimne78kx3ncx6brgo4mv6wki5h1ko' }
+        method: 'POST', retry: 3, pause: 1000, silent: true, body: JSON.stringify(body),
+        headers: {
+            'Authorization': `OAuth ${process.env.GRAPHQL_OAUTH}`, 'Client-Id': 'kimne78kx3ncx6brgo4mv6wki5h1ko',
+            'Client-Integrity': `${process.env.GRAPHQL_INTEGRITY}`, 'X-Device-Id': `${process.env.GRAPHQL_DEVICEID}`,
+        }
     })
     .then(resp => resp.json())
     .then(data => {
-        if (data && data[0]["data"]["channel"]["modLogs"]["messagesBySender"]["edges"].length == 0) {
-            var message
+        if (data && data[0].data.viewerCardModLogs.messages.length == 0) {
+            let message
 
             if (followsChannel) message = `${name} won a pinball badge but they have no chat history.`
             else message = `${name} won a pinball badge but they don't follow and haven't spoken in chat.`
