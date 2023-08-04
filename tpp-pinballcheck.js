@@ -97,7 +97,7 @@ async function queryAPI(name) {
     })
     .then(resp => resp.json())
     .then(data => {
-        if (data && data[0].data.viewerCardModLogs.messages.length == 0) {
+        if (data && data[0].data.viewerCardModLogs.messages.edges.length == 0) {
             let message
 
             if (followsChannel) message = `${name} won a pinball badge but they have no chat history.`
@@ -107,6 +107,7 @@ async function queryAPI(name) {
             notified.push(name)
         }
 
+        if (inDebugMode) console.log(name, followsChannel, data[0].data.viewerCardModLogs.messages.edges.length)
         if (inDebugMode) fs.writeFile(`chat_data/${name}.json`, JSON.stringify(data, null, 4), (err) => { if (err) throw err })
     })
     .catch(err => printMessage(`Error fetching messages for "${name}" -- ${err}`))
