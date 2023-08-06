@@ -24,14 +24,12 @@ function onMessageHandler(channel, userdata, message, self) {
     if (focus.length > 0 && !focus.includes(name)) return
 
     const currTime = new Date().getTime()
-    let prevTime
 
     if (cache[name]) {
-        prevTime = cache[name]
-
-        let millis  = currTime - prevTime
-        let minutes = Math.floor((millis / 60000))
-        let seconds = ((millis % 60000) / 1000)
+        const prevTime = cache[name]
+        const millis  = currTime - prevTime
+        const minutes = Math.floor((millis / 60000))
+        const seconds = ((millis % 60000) / 1000)
 
         if (minutes > 0) {
             printMessage(`${name}'s last message was ${minutes} minutes and ${seconds} seconds ago.`)
