@@ -1,5 +1,7 @@
 
 // define configuration options
+require('dotenv').config()
+
 const args = process.argv.slice(2)
 
 const fetch = require('node-fetch-retry')
@@ -11,19 +13,6 @@ const client = new tmi.Client({
     identity: { username: "justinfan1986", password: "kappa" },
     channels: [ "twitchplayspokemon" ],
 })
-
-// throttle queries. we don't want to thrash the servers too much.
-const queriedRecently = []
-const queue = []
-
-let timer
-
-function addToQueue(name) {
-    if (queue.includes(name) || queriedRecently[name] || name == "tpp" || name == "tppsimulator") return
-    else queue.push(name)
-
-    if (!timer) timer = setInterval(() => { if (queue.length > 0) queryIVR(queue.splice(0, 1)[0]) }, 2000)
-}
 
 function addToList(name) {
     if (/^\w+$/.test(name) && !name.startsWith("_") && !botList.includes(name)) botList.push(name)
@@ -45,19 +34,29 @@ const botList  = []
 const idList   = []
 
 if (!args.includes("--ignore-safe")) {
-fs.readFile("botcheck-safe.txt", 'utf8', (err, data) => {
-    if (err) throw err
+    fs.readFile("botcheck-safe.txt", 'utf8', (err, data) => {
+        if (err) throw err
 
-    data.split(/\r?\n/i).forEach(row => { if (row != "") safeList.push(row.toLowerCase().trim()) })
-})
+        data.split(/\r?\n/i).forEach(row => { if (row != "") safeList.push(row.toLowerCase().trim()) })
+    })
 }
 
 if (!args.includes("--ignore-marked")) {
-fs.readFile("botcheck-marked.txt", 'utf8', (err, data) => {
-    if (err) throw err
+    fs.readFile("botcheck-marked.txt", 'utf8', (err, data) => {
+        if (err) throw err
 
-    data.split(/\r?\n/i).forEach(row => { if (row != "") notified.push(row.toLowerCase().trim()) })
-})
+        data.split(/\r?\n/i).forEach(row => { if (row != "") notified.push(row.toLowerCase().trim()) })
+    })
+}
+
+function beginScan() {
+    printMessage(`There are ${numberWithCommas(idList.length)} IDs in CommanderRoot's bot list.`)
+    printMessage(`There are ${numberWithCommas(botList.length)} names in the master bot list.`)
+    printMessage(`There are ${numberWithCommas(notified.length)} names in the marked list.`)
+    printMessage(`There are ${numberWithCommas(safeList.length)} names in the safe list.`)
+
+    queryTwitch()
+    setInterval(queryTwitch, 180000)
 }
 
 function fetchFromTwitchInsights() {
@@ -70,7 +69,7 @@ function fetchFromTwitchInsights() {
         })
 
         printMessage("Finished downloading from TwitchInsights.")
-        client.connect().catch(() => printMessage(`Unable to connect to chat. Please confirm your oauth token is correct.`))
+        beginScan()
     })
     .catch(err => printMessage(`Error while downloading TwitchInsights list -- ${err}`))
 }
@@ -142,41 +141,59 @@ if (args.includes("--save-data")) {
     isSavingData = true
 }
 
-function queryIVR(name) {
-    queriedRecently[name] = setTimeout(() => queriedRecently[name] = null, 180000)
+function queryIVR(queryString) {
+    fetch(`https://api.ivr.fi/v2/twitch/user?login=${queryString}`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
+    .then(data => { if (data.ok) return data.json(); else printMessage(`Query API returned Error ${data.status} ${data.statusText}`)})
+    .then(data => {
+        if (!data) return
 
-    fetch(`https://api.ivr.fi/v2/twitch/user?login=${name}`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
-    .then(user => user.json())
-    .then(user => {
-        if (!user || user.length != 1) return
+        for (let i = 0; i < data.length; i++) {
+            const user = data[i]
+            const name = user.login
 
-        // download the user's data
-        if (isSavingData) fs.writeFile(`user_data/${name}.json`, JSON.stringify(user[0], null, 4), (err) => { if (err) throw err })
+            if (isSavingData) fs.writeFile(`user_data/${name}.json`, JSON.stringify(user, null, 4), (err) => { if (err) throw err })
+            if (safeList.includes(name) || notified.includes(name)) continue
 
-        if (safeList.includes(name) || notified.includes(name)) return
+            else if (botList.includes(name)) {
+                printMessage(`"${name}" detected. Please verify before marking.`)
+                notified.push(name)
+            }
 
-        if (idList.includes(user[0].id)) {
-            printMessage(`"${name}" detected but is in CommanderRoot's bot list. Please verify before marking.`)
-            notified.push(name)
-        }
+            else if (idList.includes(user.id)) {
+                printMessage(`"${name}" detected but is in CommanderRoot's bot list. Please verify before marking.`)
+                notified.push(name)
+            }
 
-        if (user[0].verifiedBot) {
-            printMessage(`"${name}" detected but has verifiedBot set to true. Please verify before marking.`)
-            notified.push(name)
+            else if (user.verifiedBot) {
+                printMessage(`"${name}" detected but has verifiedBot set to true. Please verify before marking.`)
+                notified.push(name)
+            }
         }
     })
-    .catch(err => printMessage(`Error fetching data for "${name}" -- ${err}`))
-
-    if (queue.length == 0) timer = clearInterval(timer)
+    .catch(err => printMessage(`Error fetching data -- ${err}`))
 }
 
-function checkUser(name, reason) {
-    if (safeList.includes(name) || notified.includes(name)) return
+function queryTwitch() {
+    fetch(`https://api.twitch.tv/helix/chat/chatters?moderator_id=44322184&broadcaster_id=56648155&first=1000`, {
+        method: 'GET', retry: 3, pause: 1000, silent: true,
+        headers: { 'Authorization': `Bearer ${process.env.TWITCH_OAUTH}`, 'Client-Id': process.env.TWITCH_CLIENTID },
+    })
+    .then(data => { if (data.ok) return data.json(); else printMessage(`Chatters API returned Error ${data.status} ${data.statusText}`)})
+    .then(data => {
+        if (!data) return
 
-    if (botList.includes(name)) {
-        printMessage(`"${name}" detected ${reason}. Please verify before marking.`)
-        notified.push(name)
-    }
+        const users = []
+
+        for (let i = 0; i < data.total; i++) users.push(data.data[i].user_login)
+
+        while (users.length > 0) {
+            const spliced = users.splice(0, 50)
+            const queryString = spliced.join()
+
+            queryIVR(queryString)
+        }
+    })
+    .catch(err => printMessage(`Error while downloading chatter list -- ${err}`))
 }
 
 // our pretty printer
@@ -185,46 +202,18 @@ function printMessage(message) {
 }
 
 // event handlers
-function onConnectedHandler(address, port) {
-    printMessage(`There are ${numberWithCommas(idList.length)} IDs in CommanderRoot's bot list.`)
-    printMessage(`There are ${numberWithCommas(botList.length)} names in the master bot list.`)
-    printMessage(`There are ${numberWithCommas(notified.length)} names in the marked list.`)
-    printMessage(`There are ${numberWithCommas(safeList.length)} names in the safe list.`)
-}
-
 function onMessageHandler(channel, userdata, message, self) {
     const name = userdata.username
 
-    if (notified.includes(name)) {
+    if (safeList.includes(name)) return
+
+    if (notified.includes(name) || botList.includes(name)) {
         printMessage(`"${name}" is in the marked list but they just sent a message.`)
     }
-
-    addToQueue(name)
-    checkUser(name, "sending a message")
-}
-
-function onJoinHandler(channel, name) {
-    addToQueue(name)
-    checkUser(name, "joining chat")
-}
-
-function onPartHandler(channel, name) {
-    addToQueue(name)
-    checkUser(name, "leaving chat")
-}
-
-function onNamesHandler(channel, names) {
-    names.forEach((name) => {
-        addToQueue(name)
-        checkUser(name, "during startup")
-    })
 }
 
 // engage
 fetchFromCommanderRoot()
 
-client.on('join', onJoinHandler)
-client.on('part', onPartHandler)
-client.on('names', onNamesHandler)
 client.on('message', onMessageHandler)
-client.on('roomstate', onConnectedHandler)
+client.connect().catch(() => printMessage(`Unable to connect to chat. Please confirm your oauth token is correct.`))
