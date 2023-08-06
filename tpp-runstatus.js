@@ -22,16 +22,14 @@ function getDateString() {
 // gather the goods
 function downloadRunStatus() {
     fetch("https://twitchplayspokemon.tv/api/run_status", { method: "GET", retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts', 'Client-ID': process.env.TWITCH_CLIENTID, 'OAuth-Token': process.env.TWITCH_OAUTH } })
-    .then(page => page.json())
-    .then(json => {
-        let data = JSON.stringify(json, null, 4)
-
+    .then(data => { if (data.ok) return data.json(); else printMessage(`no run status available (Error ${data.status} ${data.statusText})`)})
+    .then(data => {
+        if (!data) return
         if (!fs.existsSync("run_status")) fs.mkdirSync("run_status")
 
-        // 'json["game"]' defaults to 'undefined' if the API returns an error or is unavailable
-        let fileName = `run_status/${getDateString()}-${json["game"]}.json`
+        const fileName = `run_status/${getDateString()}-${data["game"]}.json`
 
-        fs.writeFile(fileName, data, (err) => {
+        fs.writeFile(fileName, JSON.stringify(data, null, 4), (err) => {
             if (err) throw err
 
             printMessage(`run status saved to '${fileName}'`)
