@@ -27,7 +27,7 @@ function downloadRunStatus() {
         if (!data) return
         if (!fs.existsSync("run_status")) fs.mkdirSync("run_status")
 
-        const fileName = `run_status/${getDateString()}-${data["game"]}.json`
+        const fileName = `run_status/${getDateString()}-${data["game"].replace(/[^a-z0-9]/gi, "")}.json`
 
         fs.writeFile(fileName, JSON.stringify(data, null, 4), (err) => {
             if (err) throw err
