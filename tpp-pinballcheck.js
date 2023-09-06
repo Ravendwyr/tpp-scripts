@@ -60,12 +60,12 @@ async function queryAPI(name) {
 
     if (safeList.includes(name) || notified.includes(name)) return
 
-    await fetch(`https://api.twitch.tv/helix/users/follows?from_id=${winnerID}&to_id=56648155`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Authorization': `Bearer ${process.env.TWITCH_OAUTH}`, 'Client-Id': process.env.TWITCH_CLIENTID } })
-    .then(resp => resp.json())
+    await fetch(`https://api.twitch.tv/helix/channels/followers?user_id=${winnerID}&broadcaster_id=56648155`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Authorization': `Bearer ${process.env.TWITCH_OAUTH}`, 'Client-Id': process.env.TWITCH_CLIENTID } })
+    .then(data => { if (data.ok) return data.json(); else printMessage(`Followers API returned Error ${data.status} ${data.statusText} for ${name}`)})
     .then(data => {
-        if (data && data.total == 0) {
+        if (data.data && data.data.length == 0) {
             followsChannel = false
-        } else if (data.total == 1) {
+        } else if (data.data.length == 1) {
             followsChannel = true
         } else {
             printMessage(`Invalid data received for ${name}. Please check your oauth.`)
