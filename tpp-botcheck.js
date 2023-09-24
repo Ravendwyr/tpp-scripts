@@ -168,7 +168,7 @@ if (args.includes("--save-data")) {
 
 function queryIVR(queryString) {
     fetch(`https://api.ivr.fi/v2/twitch/user?login=${queryString}`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
-    .then(data => { if (data.ok) return data.json(); else printMessage(`Query API returned Error ${data.status} ${data.statusText}`)})
+    .then(data => { if (data.ok) return data.json(); else printMessage(`IVR API returned Error ${data.status} ${data.statusText}`)})
     .then(data => {
         if (!data) return
 
@@ -203,7 +203,7 @@ function queryTwitch() {
         method: 'GET', retry: 3, pause: 1000, silent: true,
         headers: { 'Authorization': `Bearer ${process.env.TWITCH_OAUTH}`, 'Client-Id': process.env.TWITCH_CLIENTID },
     })
-    .then(data => { if (data.ok) return data.json(); else printMessage(`Chatters API returned Error ${data.status} ${data.statusText}`)})
+    .then(data => { if (data.ok) return data.json(); else printMessage(`Helix endpoint returned Error ${data.status} ${data.statusText}`)})
     .then(data => {
         if (!data) return
 
@@ -241,4 +241,4 @@ function onMessageHandler(channel, userdata, message, self) {
 fetchFromCommanderRoot()
 
 client.on('message', onMessageHandler)
-client.connect().catch(() => printMessage(`Unable to connect to chat. Please confirm your oauth token is correct.`))
+client.connect().catch(err => printMessage(`Unable to connect to chat. ${err}`))
