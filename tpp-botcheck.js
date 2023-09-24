@@ -114,6 +114,7 @@ function fetchFromGitHub() {
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/script-kiddies-2-ban-hammer-boogaloo', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/why_god', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/KiraKenjiro/TwitchBotMonitor/main/botlist.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
+        fetch('https://raw.githubusercontent.com/Twitchmods/hateraid-master.txt/main/Hater%20Master.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
     ])
     .then(data => {
         // 'data' is an array and its .length is equivalent to the number number of queries in .all() above
