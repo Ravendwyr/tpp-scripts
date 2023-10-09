@@ -209,7 +209,10 @@ function queryTwitch() {
 
         const users = []
 
-        for (let i = 0; i < data.total; i++) users.push(data.data[i].user_login)
+        for (let i = 0; i < data.total; i++) {
+            if (data.data[i].user_login != "") users.push(data.data[i].user_login)
+            //else console.log(data.data[i])
+        }
 
         while (users.length > 0) {
             const spliced = users.splice(0, 50)
