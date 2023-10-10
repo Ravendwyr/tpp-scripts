@@ -198,8 +198,11 @@ function queryIVR(queryString) {
     .catch(err => printMessage(`Error fetching data -- ${err}`))
 }
 
-function queryTwitch() {
-    fetch(`https://api.twitch.tv/helix/chat/chatters?moderator_id=44322184&broadcaster_id=56648155&first=1000`, {
+function queryTwitch(cursor) {
+    let pagination = ""
+    if (cursor) pagination = `&after=${cursor}`
+
+    fetch(`https://api.twitch.tv/helix/chat/chatters?moderator_id=44322184&broadcaster_id=56648155&first=50${pagination}`, {
         method: 'GET', retry: 3, pause: 1000, silent: true,
         headers: { 'Authorization': `Bearer ${process.env.TWITCH_OAUTH}`, 'Client-Id': process.env.TWITCH_CLIENTID },
     })
@@ -208,18 +211,13 @@ function queryTwitch() {
         if (!data) return
 
         const users = []
-
-        for (let i = 0; i < data.total; i++) {
+        for (let i = 0; i < data.data.length; i++) {
             if (data.data[i].user_login != "") users.push(data.data[i].user_login)
             //else console.log(data.data[i])
         }
 
-        while (users.length > 0) {
-            const spliced = users.splice(0, 50)
-            const queryString = spliced.join()
-
-            queryIVR(queryString)
-        }
+        queryIVR(users.join())
+        if (data.pagination.cursor) setTimeout(() => queryTwitch(data.pagination.cursor), 100)
     })
     .catch(err => printMessage(`Error while downloading chatter list -- ${err}`))
 }
