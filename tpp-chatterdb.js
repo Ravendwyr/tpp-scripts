@@ -25,7 +25,7 @@ async function addToDatabase(array, skip) {
         userDB.push(`/${user_id}`, { "user_login": user_login, "time_in_chat": 0, "spoken_in_chat": false })
     } else {
         // user exists in the database; update their time_in_chat and check if they've spoken_in_chat
-        if (!skip) userDB.push(`/${user_id}/time_in_chat`, result.time_in_chat + 15)
+        if (!skip) userDB.push(`/${user_id}/time_in_chat`, result.time_in_chat + 5)
 
         if (result.spoken_in_chat == false) {
             // no need to spam GQL with requests if we know they've spoken at least once.
@@ -96,4 +96,4 @@ function queryTwitch(cursor, skip) {
 
 // engage
 queryTwitch(null, true)
-setInterval(queryTwitch, 900000, null, false)
+setInterval(queryTwitch, 300000, null, false)
