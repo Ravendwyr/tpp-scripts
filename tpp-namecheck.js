@@ -14,15 +14,20 @@ function printMessage(message) {
 // gather the goods
 fs.readdir(directory, (err, files) => {
     if (err) throw err
-    else files.forEach(file => {
+
+    files.forEach((file, i) => {
+        setTimeout(() => {
         fs.readFile(directory+file, 'utf8', (err, data) => {
             if (err) throw err
 
             const user = JSON.parse(data)
+            const login = user.login
             const id = user.id
 
-            if (userIDs[id]) printMessage(`User ID ${id} clash - ${userIDs[id]} vs ${user.login}`)
-            else userIDs[id] = user.login
+            if (userIDs[id]) printMessage(`User ID ${id} clash - ${userIDs[id]} vs ${login}`)
+            else userIDs[id] = login
         })
+        // need a small delay to prevent "too many open files" and "maximum call stack size exceeded" errors
+        }, i*2)
     })
 })
