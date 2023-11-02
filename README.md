@@ -14,21 +14,21 @@ Then make sure the necessary libraries are installed.
     $ cd tpp-scripts
     $ npm install
 
-Optional but recommended: some of these scripts can use a Client ID from a [Twitch App](https://dev.twitch.tv/console) alongside an [OAuth Key](https://twitchtokengenerator.com/) linked to the Twitch App for ratelimiting purposes, while others can make use of your [auth-key cookie](chrome://settings/cookies/detail?site=twitch.tv) to access Twitch's GraphQL systems.  These keys can be stored in the provided `.env` file prior to launching the scripts.
+These scripts require [Node 16](https://nodejs.org/dist/latest-v16.x/) or newer.
 
-These scripts have been built and tested with [Node 12](https://nodejs.org/dist/latest-v12.x/), however other versions may still work.
+Some of these scripts also require a Client ID, Client Secret, and Refresh Token from a [Twitch App](https://dev.twitch.tv/console/apps) and an [OAuth Token](https://twitchtokengenerator.com) with `moderator:read:chatters` and `moderator:read:followers` permissions in order to work, while others require your [first-party auth-key](chrome://settings/cookies/detail?site=twitch.tv) in order to access Twitch GraphQL.  These keys can be stored in the provided `.env` file.
 
 ***
 
 ## tpp-botcheck.js
 
-Originally designed as a moderation aid, this script uses [tmi.js](https://www.npmjs.com/package/tmi.js) to scan for and detect bot accounts in the chosen channel's chat room.  The userlist is compared with a list of bots on [TwitchInsights](https://twitchinsights.net/bots) and [CommanderRoot](https://twitch-tools.rootonline.de/blocklist_manager.php) and prints detected bot accounts into the terminal window.  Each account is only printed once to reduce spam.
+Originally designed as a moderation aid, this script uses Twitch's [Get Chatters endpoint](https://dev.twitch.tv/docs/api/reference/#get-chatters) to scan for and detect bot accounts in the chosen channel's chat room.  The userlist is compared with a list of bots on [TwitchInsights](https://twitchinsights.net/bots) and [CommanderRoot](https://twitch-tools.rootonline.de/blocklist_manager.php) and prints detected bot accounts into the terminal window.  Each account is only printed once to reduce spam.
 
 This script can save user data to `user_data/<username>.json` however this is disabled by default.  It also reads the included `botcheck-safe.txt` and `botcheck-marked.txt` to filter out duplicates and false positives from the output.  Saving user data can be easily enabled by including the `--save-data` argument.
 
 `botcheck-safe.txt` is intended to be a manually maintained list of false positives while `botcheck-marked.txt` is intended to be a manually maintained list of accounts marked as bots in the stream's database.  If the `--ignore-safe` flag is included in the command, the contents of `botcheck-safe.txt` will be ignored. If the `--ignore-marked` flag is included, the contents of `botcheck-marked.txt` will be ignored.  It is not recommended nor necessary to use these flags as they have been left in for debugging purposes.
 
-The script checks the names on inital boot, when a new message comes in, or when a user joins or leaves the chat and doesn't stop until terminated.
+The script queries the endpoint once every 3 minutes and doesn't stop until terminated.
 
     $ node tpp-botcheck
     $ node tpp-botcheck --ignore-safe --ignore-marked
