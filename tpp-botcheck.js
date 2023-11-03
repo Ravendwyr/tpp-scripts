@@ -216,7 +216,9 @@ function queryTwitch(cursor) {
             //else console.log(data.data[i])
         }
 
-        queryIVR(users.join())
+        const queryString = users.join()
+        if (queryString != "") queryIVR(queryString)
+
         if (data.pagination.cursor) setTimeout(() => queryTwitch(data.pagination.cursor), 100)
     })
     .catch(err => printMessage(`Error while downloading chatter list -- ${err}`))
