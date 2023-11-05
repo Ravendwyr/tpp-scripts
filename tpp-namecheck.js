@@ -1,7 +1,7 @@
 
 // define configuration options
 const directory = './user_data/'
-const fs = require('graceful-fs')
+const fs = require('fs')
 
 // build our user list
 const userIDs = []

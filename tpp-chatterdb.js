@@ -6,7 +6,7 @@ const { JsonDB, Config } = require('node-json-db')
 const userDB = new JsonDB(new Config('db-users', true, true, '/'))
 
 const fetch = require('node-fetch-retry')
-const fs = require('graceful-fs')
+const fs = require('fs')
 
 // our pretty printer
 function printMessage(message) {
