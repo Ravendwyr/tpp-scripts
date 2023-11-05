@@ -100,6 +100,7 @@ function fetchFromGitHub() {
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/bots%20part%202', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/bots2.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/bruh', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
+        fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/bruhmoment', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/caleb', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/common-bots', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/couple_o_hosses', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
