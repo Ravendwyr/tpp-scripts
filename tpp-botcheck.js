@@ -27,6 +27,23 @@ function checkPayload(data) {
     return data.text()
 }
 
+// ensure our token is valid
+function validateToken(print) {
+    if (print) printMessage(`Validating OAuth token...`)
+
+    // https://dev.twitch.tv/docs/authentication/validate-tokens/
+    fetch(`https://id.twitch.tv/oauth2/validate`, { method: 'GET', headers: { 'Authorization': `OAuth ${process.env.TWITCH_OAUTH}` }})
+    .then(data => data.json())
+    .then(data => {
+        if (data.login && print) printMessage(`OAuth token is valid and will expire on ${new Date(Date.now() + (data.expires_in * 1000))}`)
+        else if (data.status == 401) {
+            printMessage(`OAuth token is invalid or has expired. Please create a new one and update env file.`)
+            setTimeout(process.exit, 1000)
+        }
+    })
+    .catch(err => printMessage(`Error while checking token validity -- ${err}`))
+}
+
 // build our bot list
 const safeList = []
 const notified = []
@@ -242,6 +259,9 @@ function onMessageHandler(channel, userdata, message, self) {
 }
 
 // engage
+validateToken(true)
+setInterval(validateToken, 3600000, false)
+
 fetchFromCommanderRoot()
 
 client.on('message', onMessageHandler)
