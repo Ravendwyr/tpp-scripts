@@ -5,18 +5,20 @@ My collection of scripts to aid moderation at Twitch Plays Pokémon.
 
 ## Getting Started
 
-To use these scripts, you must first checkout the repository.
+1) Install [Node 16](https://nodejs.org/dist/latest-v16.x/) or newer.
+
+2) Checkout the repository.
 
     $ git clone https://github.com/Ravendwyr/tpp-scripts.git
 
-Then make sure the necessary libraries are installed.
+3) Install the necessary libraries.
 
     $ cd tpp-scripts
     $ npm install
 
-These scripts require [Node 16](https://nodejs.org/dist/latest-v16.x/) or newer.
+4) Obtain an [oauth code](https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=r7apxa1iipuiya961yv7e8gqhb79j0&force_verify=true&redirect_uri=https://twitchapps.com/tokengen/&scope=moderator%3Aread%3Achatters+moderator%3Aread%3Afollowers) from Twitch.
 
-Some of these scripts also require a Client ID, Client Secret, and Refresh Token from a [Twitch App](https://dev.twitch.tv/console/apps) and an [OAuth Token](https://twitchtokengenerator.com) with `moderator:read:chatters` and `moderator:read:followers` permissions in order to work, while others require your [first-party auth-key](chrome://settings/cookies/detail?site=twitch.tv) in order to access Twitch GraphQL.  These keys can be stored in the provided `.env` file.
+Some of these scripts require your [Twitch App](https://dev.twitch.tv/console/apps)'s Client ID and a linked [oauth code](https://twitchtokengenerator.com) with `moderator:read:chatters` and `moderator:read:followers` permissions in order to access Twitch API endpoints, while others require your [first-party auth-key](chrome://settings/cookies/detail?site=twitch.tv) in order to access Twitch GraphQL.  These keys need to be stored in the provided `.env` file before use.
 
 ***
 
