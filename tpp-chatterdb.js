@@ -3,7 +3,7 @@
 require('dotenv').config()
 
 const { JsonDB, Config } = require('node-json-db')
-const userDB = new JsonDB(new Config('db-users', true, true, '/'))
+const userDB = new JsonDB(new Config('db-users', false, true, '/'))
 
 const fetch = require('node-fetch-retry')
 
@@ -98,6 +98,7 @@ function queryTwitch(cursor, skip) {
 
         for (let i = 0; i < data.data.length; i++) {
             if (data.data[i].user_login != "") addToDatabase(data.data[i], skip)
+            if (i+1 == data.data.length) userDB.save()
             //else console.log(data.data[i])
         }
 
@@ -107,6 +108,8 @@ function queryTwitch(cursor, skip) {
 }
 
 // engage
+userDB.load()
+
 validateToken(true)
 setInterval(validateToken, 3600000, false)
 
