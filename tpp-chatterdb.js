@@ -43,6 +43,13 @@ async function addToDatabase(array, skip) {
         // user exists in the database; update their time_in_chat and check if they've spoken_in_chat
         if (!skip) userDB.push(`/${user_id}/time_in_chat`, result.time_in_chat + 5)
 
+        if (result.user_login != user_login) {
+            printMessage(`${result.user_login} has changed their name to ${user_login}`)
+
+            userDB.push(`/${user_id}/previous_login`, result.user_login)
+            userDB.push(`/${user_id}/user_login`, user_login)
+        }
+
         // no need to spam GQL with requests if we know they've spoken at least once.
         if (result.spoken_in_chat == false) {
             const body = [{
