@@ -6,7 +6,6 @@ const { JsonDB, Config } = require('node-json-db')
 const userDB = new JsonDB(new Config('db-users', true, true, '/'))
 
 const fetch = require('node-fetch-retry')
-const fs = require('fs')
 
 // our pretty printer
 function printMessage(message) {
@@ -44,8 +43,8 @@ async function addToDatabase(array, skip) {
         // user exists in the database; update their time_in_chat and check if they've spoken_in_chat
         if (!skip) userDB.push(`/${user_id}/time_in_chat`, result.time_in_chat + 5)
 
+        // no need to spam GQL with requests if we know they've spoken at least once.
         if (result.spoken_in_chat == false) {
-            // no need to spam GQL with requests if we know they've spoken at least once.
             const body = [{
                 operationName: 'ViewerCardModLogsMessagesBySender',
                 variables: {
@@ -69,19 +68,8 @@ async function addToDatabase(array, skip) {
             })
             .then(data => data.json())
             .then(data => {
-                if (data[0].data.viewerCardModLogs.messages.code) {
-                    // a server error occurred. do nothing.
-                    //fs.writeFile(`chatcode-${user_login}.json`, JSON.stringify(data, null, 4), err => { if (err) throw err })
-                } else if (data[0].data.viewerCardModLogs.messages.edges) {
-                    // this is done on purpose to prevent the script from flooding the directory with unneeded files.
-                    if (data[0].data.viewerCardModLogs.messages.edges.length > 0) {
-                        // user has spoken, mark down as such.
-                        userDB.push(`/${user_id}/spoken_in_chat`, true)
-                    }
-                } else {
-                    // an unhandled exception occurred.
-                    fs.writeFile(`chaterror-${user_login}.json`, JSON.stringify(data, null, 4), err => { if (err) throw err })
-                }
+                // user has spoken, mark down as such.
+                if (data[0]?.data?.viewerCardModLogs?.messages?.edges?.length > 0) userDB.push(`/${user_id}/spoken_in_chat`, true)
             })
             .catch(err => printMessage(`ERROR fetching messages for ${user_login} -- ${err}`))
         }
