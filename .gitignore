@@ -44,7 +44,6 @@ jspm_packages/
 # Output directories
 run_status/
 user_avatars/
-user_data/
 chat_data/
 
 # Output files

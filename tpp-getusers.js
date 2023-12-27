@@ -27,14 +27,7 @@ function addToQueue(name) {
 }
 
 // gather the goods
-let isSavingData = false
-
 if (!fs.existsSync("user_avatars")) fs.mkdirSync("user_avatars")
-
-if (args.includes("--save-data")) {
-    if (!fs.existsSync("user_data")) fs.mkdirSync("user_data")
-    isSavingData = true
-}
 
 function getUserData(name) {
     previousName = name
@@ -45,7 +38,6 @@ function getUserData(name) {
         if (!user || user.length != 1) return
 
         // download the user's data
-        if (isSavingData) fs.writeFile(`user_data/${name}.json`, JSON.stringify(user[0], null, 4), (err) => { if (err) throw err })
         if (user[0].logo.includes("user-default-pictures")) return
 
         // download the user's profile pic

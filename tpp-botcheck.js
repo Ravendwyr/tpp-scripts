@@ -178,13 +178,6 @@ function fetchFromCommanderRoot() {
 }
 
 // gather the goods
-let isSavingData = false
-
-if (args.includes("--save-data")) {
-    if (!fs.existsSync("user_data")) fs.mkdirSync("user_data")
-    isSavingData = true
-}
-
 function queryIVR(queryString) {
     fetch(`https://api.ivr.fi/v2/twitch/user?login=${queryString}`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
     .then(data => { if (data.ok) return data.json(); else printMessage(`IVR API returned Error ${data.status} ${data.statusText}`)})
@@ -195,7 +188,6 @@ function queryIVR(queryString) {
             const user = data[i]
             const name = user.login
 
-            if (isSavingData) fs.writeFile(`user_data/${name}.json`, JSON.stringify(user, null, 4), (err) => { if (err) throw err })
             if (safeList.includes(name) || notified.includes(name)) continue
 
             else if (botList.includes(name)) {
