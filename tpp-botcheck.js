@@ -222,10 +222,8 @@ function onMessageHandler(channel, userdata, message, self) {
     const name = userdata.username
 
     if (safeList.includes(name)) return
-
-    if (notified.includes(name) || botList.includes(name)) {
-        printMessage(`"${name}" is in the marked list but they just sent a message.`)
-    }
+    else if (notified.includes(name)) printMessage(`"${name}" is in the marked list but they just sent a message.`)
+    else if (botList.includes(name))  printMessage(`"${name}" is in the master bot list but they just sent a message.`)
 }
 
 // engage
