@@ -178,15 +178,21 @@ function fetchFromCommanderRoot() {
 }
 
 // gather the goods
-function queryIVR(queryString) {
-    fetch(`https://api.ivr.fi/v2/twitch/user?login=${queryString}`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
-    .then(data => { if (data.ok) return data.json(); else printMessage(`IVR API returned Error ${data.status} ${data.statusText}`)})
+function queryTwitch(cursor) {
+    let pagination = ""
+    if (cursor) pagination = `&after=${cursor}`
+
+    fetch(`https://api.twitch.tv/helix/chat/chatters?moderator_id=44322184&broadcaster_id=56648155&first=1000${pagination}`, {
+        method: 'GET', retry: 3, pause: 1000, silent: true,
+        headers: { 'Authorization': `Bearer ${process.env.TWITCH_OAUTH}`, 'Client-Id': process.env.TWITCH_CLIENTID },
+    })
+    .then(data => { if (data.ok) return data.json(); else printMessage(`Helix endpoint returned Error ${data.status} ${data.statusText}`)})
     .then(data => {
         if (!data) return
 
-        for (let i = 0; i < data.length; i++) {
-            const user = data[i]
-            const name = user.login
+        for (let i = 0; i < data.data.length; i++) {
+            const id = data.data[i].user_id
+            const name = data.data[i].user_login
 
             if (safeList.includes(name) || notified.includes(name)) continue
 
@@ -195,40 +201,11 @@ function queryIVR(queryString) {
                 notified.push(name)
             }
 
-            else if (idList.includes(user.id)) {
+            else if (idList.includes(id)) {
                 printMessage(`"${name}" detected but is in CommanderRoot's bot list. Please verify before marking.`)
                 notified.push(name)
             }
-
-            else if (user.verifiedBot) {
-                printMessage(`"${name}" detected but has verifiedBot set to true. Please verify before marking.`)
-                notified.push(name)
-            }
         }
-    })
-    .catch(err => printMessage(`Error fetching data -- ${err}`))
-}
-
-function queryTwitch(cursor) {
-    let pagination = ""
-    if (cursor) pagination = `&after=${cursor}`
-
-    fetch(`https://api.twitch.tv/helix/chat/chatters?moderator_id=44322184&broadcaster_id=56648155&first=50${pagination}`, {
-        method: 'GET', retry: 3, pause: 1000, silent: true,
-        headers: { 'Authorization': `Bearer ${process.env.TWITCH_OAUTH}`, 'Client-Id': process.env.TWITCH_CLIENTID },
-    })
-    .then(data => { if (data.ok) return data.json(); else printMessage(`Helix endpoint returned Error ${data.status} ${data.statusText}`)})
-    .then(data => {
-        if (!data) return
-
-        const users = []
-        for (let i = 0; i < data.data.length; i++) {
-            if (data.data[i].user_login != "") users.push(data.data[i].user_login)
-            //else console.log(data.data[i])
-        }
-
-        const queryString = users.join()
-        if (queryString != "") queryIVR(queryString)
 
         if (data.pagination.cursor) setTimeout(() => queryTwitch(data.pagination.cursor), 100)
     })
