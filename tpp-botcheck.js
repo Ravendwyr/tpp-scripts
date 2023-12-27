@@ -97,6 +97,7 @@ function fetchFromGitHub() {
         fetch('https://raw.githubusercontent.com/arrowgent/Twitchtv-Bots-List/main/goodbot.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/paret0x/Twitch-Bot-Finder/main/botlist.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/paret0x/Twitch-Bot-Finder/main/whitelist.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
+        fetch('https://raw.githubusercontent.com/isdsdataarchive/twitch_ban_lists/main/fake_scam_list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/isdsdataarchive/twitch_ban_lists/main/follower_bot_list.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/isdsdataarchive/twitch_ban_lists/main/greylisted_bots.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/isdsdataarchive/twitch_ban_lists/main/hate_troll_list_0_g.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
@@ -128,10 +129,10 @@ function fetchFromGitHub() {
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/more-bots', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/new%20bots', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/new-hate-raids', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
+        fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/nuh-uh', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/papa', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/script-kiddies-2-ban-hammer-boogaloo', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/why_god', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
-        fetch('https://raw.githubusercontent.com/KiraKenjiro/TwitchBotMonitor/main/botlist.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
         fetch('https://raw.githubusercontent.com/Twitchmods/hateraid-master.txt/main/Hater%20Master.txt', { method: 'GET', retry: 3, pause: 1000, silent: true }).then(checkPayload),
     ])
     .then(data => {
