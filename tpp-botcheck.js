@@ -73,7 +73,7 @@ function beginScan() {
     printMessage(`There are ${numberWithCommas(safeList.length)} names in the safe list.`)
 
     queryTwitch()
-    setInterval(queryTwitch, 180000)
+    setInterval(queryTwitch, 30000)
 }
 
 function fetchFromTwitchInsights() {

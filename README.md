@@ -30,7 +30,7 @@ This script can save user data to `user_data/<username>.json` however this is di
 
 `botcheck-safe.txt` is intended to be a manually maintained list of false positives while `botcheck-marked.txt` is intended to be a manually maintained list of accounts marked as bots in the stream's database.  If the `--ignore-safe` flag is included in the command, the contents of `botcheck-safe.txt` will be ignored. If the `--ignore-marked` flag is included, the contents of `botcheck-marked.txt` will be ignored.  It is not recommended nor necessary to use these flags as they have been left in for debugging purposes.
 
-The script queries the endpoint once every 3 minutes and doesn't stop until terminated.
+The script queries the endpoint once every 30 seconds and doesn't stop until terminated.
 
     $ node tpp-botcheck
     $ node tpp-botcheck --ignore-safe --ignore-marked
