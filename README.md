@@ -5,20 +5,24 @@ My collection of scripts to aid moderation at Twitch Plays Pokémon.
 
 ## Getting Started
 
-1) Install [Node 16](https://nodejs.org/dist/latest-v16.x/) or newer.
+1. Install [Node 16](https://nodejs.org/dist/latest-v16.x/) or newer.
 
-2) Checkout the repository.
+2. Checkout the repository.
 
-    $ git clone https://github.com/Ravendwyr/tpp-scripts.git
+```
+$ git clone https://github.com/Ravendwyr/tpp-scripts.git
+```
 
-3) Install the necessary libraries.
+3. Install the necessary libraries.
 
-    $ cd tpp-scripts
-    $ npm install
+```
+$ cd tpp-scripts
+$ npm install
+```
 
-4) Obtain an [oauth code](https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=r7apxa1iipuiya961yv7e8gqhb79j0&force_verify=true&redirect_uri=https://twitchapps.com/tokengen/&scope=moderator%3Aread%3Achatters+moderator%3Aread%3Afollowers) from Twitch.
+4. Obtain an [oauth code](https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=r7apxa1iipuiya961yv7e8gqhb79j0&force_verify=true&redirect_uri=https://twitchapps.com/tokengen/&scope=moderator%3Aread%3Achatters+moderator%3Aread%3Afollowers) from Twitch.
 
-Some of these scripts require your [Twitch App](https://dev.twitch.tv/console/apps)'s Client ID and a linked [oauth code](https://twitchtokengenerator.com) with `moderator:read:chatters` and `moderator:read:followers` permissions in order to access Twitch API endpoints, while others require your [first-party auth-key](chrome://settings/cookies/detail?site=twitch.tv) in order to access Twitch GraphQL.  These keys need to be stored in the provided `.env` file before use.
+    Some of these scripts require your [Twitch App](https://dev.twitch.tv/console/apps)'s Client ID and a linked [oauth code](https://twitchtokengenerator.com) with `moderator:read:chatters` and `moderator:read:followers` permissions in order to access Twitch API endpoints, while others require your [first-party auth-key](chrome://settings/cookies/detail?site=twitch.tv) in order to access Twitch GraphQL.  These keys need to be stored in the provided `.env` file before use.
 
 ***
 
@@ -26,15 +30,16 @@ Some of these scripts require your [Twitch App](https://dev.twitch.tv/console/ap
 
 Originally designed as a moderation aid, this script uses Twitch's [Get Chatters endpoint](https://dev.twitch.tv/docs/api/reference/#get-chatters) to scan for and detect bot accounts in the chosen channel's chat room.  The userlist is compared with a list of bots on [TwitchInsights](https://twitchinsights.net/bots) and [CommanderRoot](https://twitch-tools.rootonline.de/blocklist_manager.php) and prints detected bot accounts into the terminal window.  Each account is only printed once to reduce spam.
 
-This script can save user data to `user_data/<username>.json` however this is disabled by default.  It also reads the included `botcheck-safe.txt` and `botcheck-marked.txt` to filter out duplicates and false positives from the output.  Saving user data can be easily enabled by including the `--save-data` argument.
+This script also reads the included `botcheck-safe.txt` and `botcheck-marked.txt` to filter out duplicates and false positives from the output.
 
-`botcheck-safe.txt` is intended to be a manually maintained list of false positives while `botcheck-marked.txt` is intended to be a manually maintained list of accounts marked as bots in the stream's database.  If the `--ignore-safe` flag is included in the command, the contents of `botcheck-safe.txt` will be ignored. If the `--ignore-marked` flag is included, the contents of `botcheck-marked.txt` will be ignored.  It is not recommended nor necessary to use these flags as they have been left in for debugging purposes.
+`botcheck-safe.txt` is intended to be a manually maintained list of false positives while `botcheck-marked.txt` is intended to be a manually maintained list of accounts marked as bots in the stream's database.  If the `--ignore-safe` flag is included in the command, the contents of `botcheck-safe.txt` will be ignored.  If the `--ignore-marked` flag is included, the contents of `botcheck-marked.txt` will be ignored.  It is not recommended nor necessary to use these flags as they have been left in for debugging purposes.
 
 The script queries the endpoint once every 30 seconds and doesn't stop until terminated.
 
-    $ node tpp-botcheck
-    $ node tpp-botcheck --ignore-safe --ignore-marked
-    $ node tpp-botcheck --save-data
+```
+$ node tpp-botcheck
+$ node tpp-botcheck --ignore-safe --ignore-marked
+```
 
 ***
 
@@ -44,8 +49,10 @@ This quick and dirty script uses [tmi.js](https://www.npmjs.com/package/tmi.js) 
 
 The script checks every new message comes in and doesn't stop until terminated.
 
-    $ node tpp-inputcheck
-    $ node tpp-inputcheck name1 name2 name3 ...
+```
+$ node tpp-inputcheck
+$ node tpp-inputcheck name1 name2 name3 ...
+```
 
 ***
 
@@ -53,12 +60,13 @@ The script checks every new message comes in and doesn't stop until terminated.
 
 Originally designed as a moderation aid, this script uses [tmi.js](https://www.npmjs.com/package/tmi.js) to query the Twitch API to download and save the userdata and profile pictures of ~~almost~~ everyone in the chosen channel's chat room.
 
-User data is saved to `user_data/<username>.json` while their profile pictures are saved to `user_avatars/<username>-<filehash>.png`.  Saving user data is disabled by default but can be easily enabled by including the `--save-data` argument.
+User profile pictures are saved to `user_avatars/<username>-<filehash>.png`.
 
 The script checks users on inital boot, when a new message comes in, or when a user joins or leaves the chat and doesn't stop until terminated.
 
-    $ node tpp-getusers
-    $ node tpp-getusers --save-data
+```
+$ node tpp-getusers
+```
 
 ***
 
@@ -70,7 +78,9 @@ Be warned that the more the user has spoken in chat, the longer it will take and
 
 This script runs once and will ~~eventually~~ save the user's chat history to `chat_data/<username>.txt` when it finishes.
 
-    $ node tpp-chatarchive name
+```
+$ node tpp-chatarchive name
+```
 
 ***
 
@@ -80,4 +90,6 @@ This queries the TwitchPlaysPokemon API for any active runs and saves the curren
 
 The script checks the API once every 20 seconds and doesn't stop until terminated.
 
-    $ node tpp-runstatus
+```
+$ node tpp-runstatus
+```
