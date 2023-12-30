@@ -197,12 +197,12 @@ function queryTwitch(cursor) {
             if (safeList.includes(name) || notified.includes(name)) continue
 
             else if (botList.includes(name)) {
-                printMessage(`"${name}" detected. Please verify before marking.`)
+                printMessage(`"${name}" is in the master bot list. Please verify before marking.`)
                 notified.push(name)
             }
 
             else if (idList.includes(id)) {
-                printMessage(`"${name}" detected but is in CommanderRoot's bot list. Please verify before marking.`)
+                printMessage(`"${name}" is in CommanderRoot's bot list. Please verify before marking.`)
                 notified.push(name)
             }
         }
@@ -222,7 +222,7 @@ function onMessageHandler(channel, userdata, message, self) {
     const name = userdata.username
 
     if (safeList.includes(name)) return
-    else if (notified.includes(name)) printMessage(`"${name}" is in the marked list but they just sent a message.`)
+    else if (notified.includes(name)) printMessage(`"${name}" is marked as a bot but they just sent a message.`)
     else if (botList.includes(name))  printMessage(`"${name}" is in the master bot list but they just sent a message.`)
 }
 
