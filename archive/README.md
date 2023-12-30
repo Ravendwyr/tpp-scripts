@@ -18,3 +18,11 @@ This was originaly part of `tpp-botcheck.js` and has been spun off into its own 
 This script can use the `botcheck-safe.txt` to filter out and ignore false positives.  If the `--ignore-safe` flag is included in the command, the contents of `botcheck-safe.txt` will be ignored.  It is not recommended nor necessary to use this flag as it has been left in for debugging purposes.
 
 Reason for archival: made redundant by `tpp-chatterdb`
+
+***
+
+## tpp-importdb.js
+
+This small and simple script was written to convert the 90,000+ files collected by older iterations of `tpp-botcheck` and similar into a JSON "database" for the `tpp-chatterdb` script to use.
+
+Reason for archival: only needed to be ran once and is kept for posterity
