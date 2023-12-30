@@ -38,20 +38,6 @@ The script queries the endpoint once every 30 seconds and doesn't stop until ter
 
 ***
 
-## tpp-pinballcheck.js
-
-This was originaly part of `tpp-botcheck.js` and has been spun off into its own module.  This script is designed to scan for and detect potential bot accounts that are not included in the lists provided by [TwitchInsights](https://twitchinsights.net/bots) or [CommanderRoot](https://twitch-tools.rootonline.de/blocklist_manager.php).  If a prize winner does not follow the channel or has not spoken in chat, their name will be printed into the terminal window.
-
-This script can use the `botcheck-safe.txt` to filter out and ignore false positives.  If the `--ignore-safe` flag is included in the command, the contents of `botcheck-safe.txt` will be ignored.  It is not recommended nor necessary to use this flag as it has been left in for debugging purposes.
-
-Due to the high probability of false positives, usage of this script is **NOT RECOMMENDED**.
-
-    $ node tpp-pinballcheck
-    $ node tpp-pinballcheck --ignore-safe --debug
-    $ node tpp-pinballcheck --save-data
-
-***
-
 ## tpp-inputcheck.js
 
 This quick and dirty script uses [tmi.js](https://www.npmjs.com/package/tmi.js) to connect to a channel and keeps track of how much time has passed between a user's messages.  By default the script monitors every user in chat but when names are included as arguments the script will only focus on the provided names.
