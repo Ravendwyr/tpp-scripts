@@ -76,16 +76,6 @@ The script checks users on inital boot, when a new message comes in, or when a u
 
 ***
 
-## tpp-namecheck.js
-
-This small and simple script will look through any cached userdata files saved by `tpp-botcheck.js` or `tpp-getusers.js` to check to see if any of them contain matching user ID numbers.  If it detects a matching number, it will output all of the usernames that have this ID number to the console to inform of a potential account name change.  If it does not detect any matches, it will fail silently.
-
-This script runs once and terminates itself after it has finished looking through the files.
-
-    $ node tpp-namecheck
-
-***
-
 ## tpp-chatarchive.js
 
 Inspired by ~~and blatantly stolen from~~ [@tonywu7's chat archiver](https://github.com/tonywu7/doug-district-public-library/blob/master/util/chat-archiver-v0.1.js), this script will query Twitch's GraphQL for the provided user's entire chat history ~~since records began in late 2017~~ and will attempt to convert it into a human readable format for archival and moderation purposes, sorted chronologically with the most recent messages at the top.

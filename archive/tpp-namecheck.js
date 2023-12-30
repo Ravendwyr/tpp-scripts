@@ -20,7 +20,15 @@ fs.readdir(directory, (err, files) => {
         fs.readFile(directory+file, 'utf8', (err, data) => {
             if (err) throw err
 
-            const user = JSON.parse(data)
+            let user
+
+            try {
+                user = JSON.parse(data)
+            } catch (err) {
+                printMessage(`${file} could not be parsed -- ${err}`)
+                return
+            }
+
             const login = user.login
             const id = user.id
 
