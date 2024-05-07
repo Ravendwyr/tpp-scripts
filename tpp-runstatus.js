@@ -2,7 +2,7 @@
 // define configuration options
 require('dotenv').config()
 
-const fetch = require('node-fetch-retry')
+const fetch = require('node-fetch')
 const fs = require('fs')
 
 // check the time
@@ -21,7 +21,7 @@ function getDateString() {
 
 // gather the goods
 function downloadRunStatus() {
-    fetch("https://twitchplayspokemon.tv/api/run_status", { method: "GET", retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts', 'Client-ID': process.env.TWITCH_CLIENTID, 'OAuth-Token': process.env.TWITCH_OAUTH } })
+    fetch("https://twitchplayspokemon.tv/api/run_status", { method: "GET", headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts', 'Client-ID': process.env.TWITCH_CLIENTID, 'OAuth-Token': process.env.TWITCH_OAUTH } })
     .then(data => { if (data.ok) return data.json(); else printMessage(`no run status available (Error ${data.status} ${data.statusText})`)})
     .then(data => {
         if (!data) return

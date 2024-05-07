@@ -5,7 +5,7 @@ require('dotenv').config()
 const { JsonDB, Config } = require('node-json-db')
 const userDB = new JsonDB(new Config('db-users', false, true, '/'))
 
-const fetch = require('node-fetch-retry')
+const fetch = require('node-fetch')
 
 // our pretty printer
 function printMessage(message) {
@@ -67,8 +67,7 @@ async function addToDatabase(array, skip) {
             }]
 
             fetch(`https://gql.twitch.tv/gql`, {
-                method: 'POST', retry: 3, pause: 1000, silent: true, body: JSON.stringify(body),
-                headers: {
+                method: 'POST', body: JSON.stringify(body), headers: {
                     'Authorization': `OAuth ${process.env.GRAPHQL_OAUTH}`, 'Client-Id': 'kimne78kx3ncx6brgo4mv6wki5h1ko',
                     'Client-Integrity': `${process.env.GRAPHQL_INTEGRITY}`, 'X-Device-Id': `${process.env.GRAPHQL_DEVICEID}`,
                 }
@@ -89,8 +88,7 @@ function queryTwitch(cursor, skip) {
     if (cursor) pagination = `&after=${cursor}`
 
     fetch(`https://api.twitch.tv/helix/chat/chatters?moderator_id=44322184&broadcaster_id=56648155&first=1000${pagination}`, {
-        method: 'GET', retry: 3, pause: 1000, silent: true,
-        headers: { 'Authorization': `Bearer ${process.env.TWITCH_OAUTH}`, 'Client-Id': process.env.TWITCH_CLIENTID },
+        method: 'GET', headers: { 'Authorization': `Bearer ${process.env.TWITCH_OAUTH}`, 'Client-Id': process.env.TWITCH_CLIENTID },
     })
     .then(data => { if (data.ok) return data.json(); else printMessage(`Chatters endpoint returned Error ${data.status} ${data.statusText}`)})
     .then(data => {

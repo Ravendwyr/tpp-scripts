@@ -2,7 +2,7 @@
 // define configuration options
 require('dotenv').config()
 
-const fetch = require('node-fetch-retry')
+const fetch = require('node-fetch')
 const fs = require('fs')
 
 const username = process.argv.slice(2)[0]
@@ -40,7 +40,7 @@ async function run() {
     }
 
     async function getUserId() {
-        const res = await fetch(`https://api.ivr.fi/v2/twitch/user?login=${username}`, { method: 'GET', retry: 3, pause: 1000, silent: true, headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
+        const res = await fetch(`https://api.ivr.fi/v2/twitch/user?login=${username}`, { method: 'GET', headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
         const data = (await res.json())[0]
         if (data) return data.id
     }
