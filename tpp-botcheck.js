@@ -169,6 +169,21 @@ function fetchFromFrankerFaceZ() {
     .catch(err => printMessage(`Error while downloading FrankerFaceZ's list -- ${err}`))
 }
 
+function fetchFromPaauulli() {
+    fetch(`https://api.paauulli.me/bot/bots`, { method: 'GET', headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
+    .then(data => data.json())
+    .then(data => {
+        data.forEach(row => {
+            const name = row.Name.toLowerCase().trim()
+            addToList(name)
+        })
+
+        printMessage("Finished downloading from Paauulli.")
+        fetchFromFrankerFaceZ()
+    })
+    .catch(err => printMessage(`Error while downloading Paauulli's list -- ${err}`))
+}
+
 function fetchFromCommanderRoot() {
     fetch(`https://twitch-tools.rootonline.de/blocklist_manager.php?preset=known_bot_users`, { method: 'GET', headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
     .then(data => data.json())
@@ -176,7 +191,7 @@ function fetchFromCommanderRoot() {
         data.forEach(id => idList.push(id.toString()))
 
         printMessage("Finished downloading from CommanderRoot.")
-        fetchFromFrankerFaceZ()
+        fetchFromPaauulli()
     })
     .catch(err => printMessage(`Error while downloading CommanderRoot's list -- ${err}`))
 }
