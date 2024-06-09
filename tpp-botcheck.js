@@ -48,7 +48,6 @@ function validateToken(print) {
 const safeList = []
 const notified = []
 const botList  = []
-const idList   = []
 
 if (!args.includes("--ignore-safe")) {
     fs.readFile("botcheck-safe.txt", 'utf8', (err, data) => {
@@ -67,7 +66,6 @@ if (!args.includes("--ignore-marked")) {
 }
 
 function beginScan() {
-    printMessage(`There are ${numberWithCommas(idList.length)} IDs in CommanderRoot's bot list.`)
     printMessage(`There are ${numberWithCommas(botList.length)} names in the master bot list.`)
     printMessage(`There are ${numberWithCommas(notified.length)} names in the marked list.`)
     printMessage(`There are ${numberWithCommas(safeList.length)} names in the safe list.`)
@@ -184,18 +182,6 @@ function fetchFromPaauulli() {
     .catch(err => printMessage(`Error while downloading Paauulli's list -- ${err}`))
 }
 
-function fetchFromCommanderRoot() {
-    fetch(`https://twitch-tools.rootonline.de/blocklist_manager.php?preset=known_bot_users`, { method: 'GET', headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
-    .then(data => data.json())
-    .then(data => {
-        data.forEach(id => idList.push(id.toString()))
-
-        printMessage("Finished downloading from CommanderRoot.")
-        fetchFromPaauulli()
-    })
-    .catch(err => printMessage(`Error while downloading CommanderRoot's list -- ${err}`))
-}
-
 // gather the goods
 function queryTwitch(cursor) {
     let pagination = ""
@@ -218,11 +204,6 @@ function queryTwitch(cursor) {
                 printMessage(`"${name}" is in the master bot list. Please verify before marking.`)
                 notified.push(name)
             }
-
-            else if (idList.includes(id)) {
-                printMessage(`"${name}" is in CommanderRoot's bot list. Please verify before marking.`)
-                notified.push(name)
-            }
         }
 
         if (data.pagination.cursor) setTimeout(() => queryTwitch(data.pagination.cursor), 100)
@@ -243,14 +224,13 @@ function onMessageHandler(channel, userdata, message, self) {
     if (safeList.includes(name)) return
     else if (notified.includes(name)) printMessage(`"${name}" is marked as a bot but they just sent a message.`)
     else if (botList.includes(name))  printMessage(`"${name}" is in the master bot list but they just sent a message.`)
-    else if (idList.includes(id))     printMessage(`"${name}" is in CommanderRoot's bot list but they just sent a message.`)
 }
 
 // engage
 validateToken(true)
 setInterval(validateToken, 3600000, false)
 
-fetchFromCommanderRoot()
+fetchFromPaauulli()
 
 client.on('message', onMessageHandler)
 client.connect().catch(err => printMessage(`Unable to connect to chat. ${err}`))
