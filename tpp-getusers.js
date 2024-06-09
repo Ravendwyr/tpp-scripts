@@ -1,7 +1,5 @@
 
 // define configuration options
-const args = process.argv.slice(2)
-
 const fetch = require('node-fetch')
 const imghash = require("imghash")
 const tmi = require('tmi.js')
