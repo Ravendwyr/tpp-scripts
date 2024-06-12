@@ -23,20 +23,25 @@ function numberWithCommas(x) {
 }
 
 function checkPayload(data) {
-    if (!data.ok) printMessage(`WARN  - ${data.url} returned Error ${data.status} ${data.statusText}`)
+    if (!data.ok) printMessage(`WARN    ${data.url} returned Error ${data.status} ${data.statusText}`)
     return data.text()
 }
 
 // ensure our token is valid
-function validateToken(print) {
-    if (print) printMessage(`Validating OAuth token...`)
+function validateToken(first) {
+    if (first) printMessage(`Validating OAuth token...`)
 
     // https://dev.twitch.tv/docs/authentication/validate-tokens/
     fetch(`https://id.twitch.tv/oauth2/validate`, { method: 'GET', headers: { 'Authorization': `OAuth ${process.env.TWITCH_OAUTH}` }})
-    .then(data => data.json())
+    .then(async data => {
+        if (data.ok) return await data.json()
+        else printMessage(`WARN    during .validateToken() - ${data.status} ${data.statusText}`)
+    })
     .then(data => {
-        if (data.login && print) printMessage(`OAuth token is valid and will expire on ${new Date(Date.now() + (data.expires_in * 1000))}`)
-        else if (data.status == 401) {
+        if (data.login && first) {
+            printMessage(`OAuth token is valid and will expire on ${new Date(Date.now() + (data.expires_in * 1000))}`)
+            fetchFromTwitchInsights()
+        } else if (data.status == 401) {
             printMessage(`OAuth token is invalid or has expired. Please create a new one and update env file.`)
             setTimeout(process.exit, 1000)
         }
@@ -84,7 +89,7 @@ function fetchFromTwitchInsights() {
         })
 
         printMessage("Finished downloading from TwitchInsights.")
-        beginScan()
+        fetchFromGitHub()
     })
     .catch(err => printMessage(`Error while downloading TwitchInsights list -- ${err}`))
 }
@@ -147,7 +152,7 @@ function fetchFromGitHub() {
         })
 
         printMessage("Finished downloading from GitHub.")
-        fetchFromTwitchInsights()
+        fetchFromFrankerFaceZ()
     })
     .catch(err => printMessage(`Error while downloading GitHub list -- ${err}`))
 }
@@ -162,7 +167,7 @@ function fetchFromFrankerFaceZ() {
         })
 
         printMessage("Finished downloading from FrankerFaceZ.")
-        fetchFromGitHub()
+        fetchFromPaauulli()
     })
     .catch(err => printMessage(`Error while downloading FrankerFaceZ's list -- ${err}`))
 }
@@ -177,7 +182,7 @@ function fetchFromPaauulli() {
         })
 
         printMessage("Finished downloading from Paauulli.")
-        fetchFromFrankerFaceZ()
+        beginScan()
     })
     .catch(err => printMessage(`Error while downloading Paauulli's list -- ${err}`))
 }
@@ -229,8 +234,6 @@ function onMessageHandler(channel, userdata, message, self) {
 // engage
 validateToken(true)
 setInterval(validateToken, 3600000, false)
-
-fetchFromPaauulli()
 
 client.on('message', onMessageHandler)
 client.connect().catch(err => printMessage(`Unable to connect to chat. ${err}`))
