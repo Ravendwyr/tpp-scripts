@@ -20,7 +20,7 @@ $ cd tpp-scripts
 $ npm install
 ```
 
-4. Obtain an [oauth code](https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=r7apxa1iipuiya961yv7e8gqhb79j0&force_verify=true&redirect_uri=https://twitchapps.com/tokengen/&scope=moderator%3Aread%3Achatters+moderator%3Aread%3Afollowers) from Twitch.
+4. Obtain an [oauth code](https://twitchtokengenerator.com/quick/ydwqNyIzGq) from Twitch.
 
     Some of these scripts require your [Twitch App](https://dev.twitch.tv/console/apps)'s Client ID and a linked [oauth code](https://twitchtokengenerator.com) with `moderator:read:chatters` and `moderator:read:followers` permissions in order to access Twitch API endpoints, while others require your [first-party auth-key](chrome://settings/cookies/detail?site=twitch.tv) in order to access Twitch GraphQL.  These keys need to be stored in the provided `.env` file before use.
 
