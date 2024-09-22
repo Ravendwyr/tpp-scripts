@@ -20,8 +20,10 @@ function validateToken(print) {
     fetch(`https://id.twitch.tv/oauth2/validate`, { method: 'GET', headers: { 'Authorization': `OAuth ${process.env.TWITCH_OAUTH}` }})
     .then(data => data.json())
     .then(data => {
-        if (data.login && print) printMessage(`OAuth token is valid and will expire on ${new Date(Date.now() + (data.expires_in * 1000))}`)
-        else if (data.status == 401) {
+        if (data.login && print) {
+            if (data.expires_in > 0) printMessage(`OAuth token is valid and will expire on ${new Date(Date.now() + (data.expires_in * 1000))}`)
+            else printMessage(`OAuth token is valid and but Twitch did not provide an expiry date.`)
+        } else if (data.status == 401) {
             printMessage(`OAuth token is invalid or has expired. Please create a new one and update env file.`)
             setTimeout(process.exit, 1000)
         }
