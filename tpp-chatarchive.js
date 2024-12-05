@@ -57,7 +57,7 @@ async function run() {
                 extensions: {
                     persistedQuery: {
                         version: 1,
-                        sha256Hash: 'fced4a36bb97e8e538c0ecea28e2e3fab8218d8873d5025fe0ddf7d2d58699ab',
+                        sha256Hash: '53962d07438ec66900c0265d3e9ec99c4124067ac3a9c718bc29b0b047d1e89c',
                     },
                 },
             },
