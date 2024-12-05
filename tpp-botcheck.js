@@ -48,7 +48,7 @@ function validateToken(first) {
             setTimeout(process.exit, 1000)
         }
     })
-    .catch(err => printMessage(`Error while checking token validity -- ${err}`))
+    .catch(err => printMessage(`ERROR   during .validateToken() - ${err}`))
 }
 
 // build our bot list
@@ -119,6 +119,7 @@ function fetchFromGitHub() {
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/Even%20more%20bots').then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/LATEST').then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/SelfPromoBots').then(checkPayload),
+        fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/andagain').then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/asd').then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/botraid_list.txt').then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/bots%20part%202').then(checkPayload),
@@ -132,6 +133,7 @@ function fetchFromGitHub() {
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/herewegoagain').then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/idek').then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/literally-every-lurkbot').then(checkPayload),
+        fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/luvserena').then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/more-bots').then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/new%20bots').then(checkPayload),
         fetch('https://raw.githubusercontent.com/16-ATLAS-16/botlist/main/newbots').then(checkPayload),
@@ -202,11 +204,9 @@ function queryTwitch(cursor) {
         if (!data) return
 
         for (let i = 0; i < data.data.length; i++) {
-            const id = data.data[i].user_id
             const name = data.data[i].user_login
 
             if (safeList.includes(name) || notified.includes(name)) continue
-
             else if (botList.includes(name)) {
                 printMessage(`"${name}" is in the master bot list. Please verify before marking.`)
                 notified.push(name)
@@ -226,7 +226,6 @@ function printMessage(message) {
 // event handlers
 function onMessageHandler(channel, userdata, message, self) {
     const name = userdata.username
-    const id = userdata["user-id"]
 
     if (safeList.includes(name)) return
     else if (notified.includes(name)) printMessage(`"${name}" is marked as a bot but they just sent a message.`)
