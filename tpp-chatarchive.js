@@ -88,11 +88,16 @@ async function run() {
     while (true) {
         const req = msgFetchTemplate(userId, cursor)
         const msgs = await processPayload(await fetch('https://gql.twitch.tv/gql', req))
-        __messages.push(...msgs.edges)
-        printMessage(`Found ${numberWithCommas(__messages.length)} messages so far...`)
-        if (msgs.pageInfo.hasNextPage) cursor = getCursor(msgs.edges)
-        else {
-            printMessage('End of data stream. Tidying up...')
+        if (msgs && msgs.edges) {
+            __messages.push(...msgs.edges)
+            printMessage(`Found ${numberWithCommas(__messages.length)} messages so far...`)
+            if (msgs.pageInfo.hasNextPage) cursor = getCursor(msgs.edges)
+            else {
+                printMessage('End of data stream. Tidying up...')
+                break
+            }
+        } else {
+            printMessage('Data stream ended abruptly. Breaking loop...')
             break
         }
     }
