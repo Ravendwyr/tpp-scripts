@@ -6,6 +6,7 @@ const { JsonDB, Config } = require('node-json-db')
 const userDB = new JsonDB(new Config('db-users', false, true, '/'))
 
 const fetch = require('node-fetch')
+const fs = require('fs')
 
 // our pretty printer
 function printMessage(message) {
@@ -40,9 +41,9 @@ async function addToDatabase(array, skip) {
 
     if (result == "user doesn't exist") {
         // new user to the database
-        userDB.push(`/${user_id}`, { "user_login": user_login, "time_in_chat": 0, "spoken_in_chat": false })
+        userDB.push(`/${user_id}`, { "user_login": user_login, "time_in_chat": 0, "last_spoke": "" })
     } else {
-        // user exists in the database; update their time_in_chat and check if they've spoken_in_chat
+        // user exists in the database; update their time_in_chat and check when they last_spoke
         if (!skip) userDB.push(`/${user_id}/time_in_chat`, result.time_in_chat + 5)
 
         if (result.user_login != user_login) {
@@ -52,35 +53,44 @@ async function addToDatabase(array, skip) {
             userDB.push(`/${user_id}/user_login`, user_login)
         }
 
-        // no need to spam GQL with requests if we know they've spoken at least once.
-        if (result.spoken_in_chat == false) {
-            const body = [{
-                operationName: 'ViewerCardModLogsMessagesBySender',
-                variables: {
-                    senderID: user_id,
-                    channelID: '56648155',
+        const body = [{
+            operationName: 'ViewerCardModLogsMessagesBySender',
+            variables: {
+                senderID: user_id,
+                channelID: '56648155',
+            },
+            extensions: {
+                persistedQuery: {
+                    version: 1,
+                    sha256Hash: '53962d07438ec66900c0265d3e9ec99c4124067ac3a9c718bc29b0b047d1e89c',
                 },
-                extensions: {
-                    persistedQuery: {
-                        version: 1,
-                        sha256Hash: '53962d07438ec66900c0265d3e9ec99c4124067ac3a9c718bc29b0b047d1e89c',
-                    },
-                },
-            }]
+            },
+        }]
 
-            fetch(`https://gql.twitch.tv/gql`, {
-                method: 'POST', body: JSON.stringify(body), headers: {
-                    'Authorization': `OAuth ${process.env.GRAPHQL_OAUTH}`, 'Client-Id': 'kimne78kx3ncx6brgo4mv6wki5h1ko',
-                    'Client-Integrity': `${process.env.GRAPHQL_INTEGRITY}`, 'X-Device-Id': `${process.env.GRAPHQL_DEVICEID}`,
-                }
-            })
-            .then(data => data.json())
-            .then(data => {
-                // user has spoken, mark down as such.
-                if (data[0]?.data?.viewerCardModLogs?.messages?.edges?.length > 0) userDB.push(`/${user_id}/spoken_in_chat`, true)
-            })
-            .catch(err => printMessage(`ERROR fetching messages for ${user_login} -- ${err}`))
-        }
+        fetch(`https://gql.twitch.tv/gql`, {
+            method: 'POST', body: JSON.stringify(body), headers: {
+                'Authorization': `OAuth ${process.env.GRAPHQL_OAUTH}`, 'Client-Id': 'kimne78kx3ncx6brgo4mv6wki5h1ko',
+                'Client-Integrity': `${process.env.GRAPHQL_INTEGRITY}`, 'X-Device-Id': `${process.env.GRAPHQL_DEVICEID}`,
+            }
+        })
+        .then(async data => {
+            if (data.ok) return await data.json()
+            else printMessage(`GQL endpoint returned Error ${data.status} ${data.statusText} for ${user_login}`)
+        })
+        .then(data => {
+            if (!data) return
+
+            if (data[0]?.data?.viewerCardModLogs?.messages?.edges?.length > 0) {
+                let sentAt = ""
+
+                if (data[0].data.viewerCardModLogs.messages.edges[0].node.sentAt) sentAt = data[0].data.viewerCardModLogs.messages.edges[0].node.sentAt.toString()
+                else if (data[0].data.viewerCardModLogs.messages.edges[0].node.timestamp) sentAt = data[0].data.viewerCardModLogs.messages.edges[0].node.timestamp.toString()
+                else fs.writeFile(`dist/chatdebug-${user_login}.txt`, JSON.stringify(data, null, 4), err => { if (err) throw err })
+
+                userDB.push(`/${user_id}/last_spoke`, sentAt)
+            } //else fs.writeFile(`dist/rawchat-${user_login}.txt`, JSON.stringify(data, null, 4), err => { if (err) throw err })
+        })
+        .catch(err => printMessage(`ERROR fetching messages for ${user_login} -- ${err}`))
     }
 }
 
