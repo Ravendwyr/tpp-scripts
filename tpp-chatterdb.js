@@ -108,8 +108,7 @@ function queryTwitch(cursor, skip) {
 
         for (let i = 0; i < data.data.length; i++) {
             if (data.data[i].user_login != "") addToDatabase(data.data[i], skip)
-            if (i+1 == data.data.length) userDB.save()
-            //else console.log(data.data[i])
+            if (i+1 == data.data.length) setTimeout(() => userDB.save(), 5000)
         }
 
         if (data.pagination.cursor) setTimeout(() => queryTwitch(data.pagination.cursor, skip), 100)
