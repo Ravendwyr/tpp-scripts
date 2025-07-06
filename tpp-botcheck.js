@@ -1,6 +1,6 @@
 
 // define configuration options
-require('dotenv').config()
+require('dotenv').config({ quiet: true })
 
 const args = process.argv.slice(2)
 
