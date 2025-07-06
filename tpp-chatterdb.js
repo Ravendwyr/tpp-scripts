@@ -41,10 +41,12 @@ async function addToDatabase(array, skip) {
 
     if (result == "user doesn't exist") {
         // new user to the database
-        userDB.push(`/${user_id}`, { "user_login": user_login, "time_in_chat": 0, "last_spoke": "" })
+        userDB.push(`/${user_id}`, { "user_login": user_login, "time_in_chat": 0, "last_spoke": "", "last_seen": new Date().toISOString() })
     } else {
-        // user exists in the database; update their time_in_chat and check when they last_spoke
+        // user exists in the database; update their time_in_chat, when they were last_seen, and check when they last_spoke
         if (!skip) userDB.push(`/${user_id}/time_in_chat`, result.time_in_chat + 5)
+
+        userDB.push(`/${user_id}/last_seen`, new Date().toISOString())
 
         if (result.user_login != user_login) {
             printMessage(`${result.user_login} has changed their name to ${user_login}`)
@@ -83,8 +85,8 @@ async function addToDatabase(array, skip) {
             if (data[0]?.data?.viewerCardModLogs?.messages?.edges?.length > 0) {
                 let sentAt = ""
 
-                if (data[0].data.viewerCardModLogs.messages.edges[0].node.sentAt) sentAt = data[0].data.viewerCardModLogs.messages.edges[0].node.sentAt.toString()
-                else if (data[0].data.viewerCardModLogs.messages.edges[0].node.timestamp) sentAt = data[0].data.viewerCardModLogs.messages.edges[0].node.timestamp.toString()
+                if (data[0].data.viewerCardModLogs.messages.edges[0].node.sentAt) sentAt = new Date(data[0].data.viewerCardModLogs.messages.edges[0].node.sentAt).toISOString()
+                else if (data[0].data.viewerCardModLogs.messages.edges[0].node.timestamp) sentAt = new Date(data[0].data.viewerCardModLogs.messages.edges[0].node.timestamp).toISOString()
                 else fs.writeFile(`dist/chatdebug-${user_login}.txt`, JSON.stringify(data, null, 4), err => { if (err) throw err })
 
                 userDB.push(`/${user_id}/last_spoke`, sentAt)
