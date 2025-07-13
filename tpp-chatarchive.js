@@ -1,6 +1,6 @@
 
 // define configuration options
-require('dotenv').config({ quiet: true })
+require('dotenv').config()
 
 const fetch = require('node-fetch')
 const fs = require('fs')

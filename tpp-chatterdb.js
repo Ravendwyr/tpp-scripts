@@ -1,6 +1,6 @@
 
 // define configuration options
-require('dotenv').config({ quiet: true })
+require('dotenv').config()
 
 const { JsonDB, Config } = require('node-json-db')
 const userDB = new JsonDB(new Config('db-users', false, true, '/'))
