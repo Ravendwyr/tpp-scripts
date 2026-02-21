@@ -1,7 +1,7 @@
 {
   "name": "tpp-scripts",
   "version": "1.0.0",
-  "description": "A collection of scripts that do stuff with Twitch Plays Pokémon API.",
+  "description": "My collection of scripts to aid moderation at Twitch Plays Pokémon.",
   "repository": "github:ravendwyr/tpp-scripts",
   "license": "MIT",
   "bugs": {
@@ -9,11 +9,14 @@
   },
   "homepage": "https://github.com/Ravendwyr/tpp-scripts#readme",
   "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
-    "dotenv": "17.2.3",
-    "imghash": "0.0.9",
-    "node-fetch": "2.7.0",
-    "node-json-db": "2.5.0",
-    "tmi.js": "1.8.5"
+    "@tmi.js/chat": "0.7.5",
+    "dotenv": "17.3.1",
+    "imghash": "1.1.2",
+    "node-json-db": "2.5.0"
   }
 }

@@ -5,7 +5,7 @@ My collection of scripts to aid moderation at Twitch Plays Pokémon.
 
 ## Getting Started
 
-1. Install [Node 16](https://nodejs.org/dist/latest-v16.x/) or newer.
+1. Install [Node 22](https://nodejs.org/dist/latest-v22.x/) or newer.
 
 2. Checkout the repository.
 
