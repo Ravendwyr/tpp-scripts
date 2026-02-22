@@ -1,18 +1,12 @@
 
 // define configuration options
-require('dotenv').config()
-
-const args = process.argv.slice(2)
-
-const fetch = require('node-fetch')
-const tmi = require('tmi.js')
-const fs = require('fs')
+import 'dotenv/config'
+import tmi from '@tmi.js/chat'
+import fs from 'fs'
 
 // create a client with our options
-const client = new tmi.Client({
-    identity: { username: "justinfan1986", password: "kappa" },
-    channels: [ "twitchplayspokemon" ],
-})
+const args = process.argv.slice(2)
+const client = new tmi.Client({ channels: [ "twitchplayspokemon" ] })
 
 function addToList(name) {
     if (/^\w+$/.test(name) && !name.startsWith("_") && !botList.includes(name)) botList.push(name)
@@ -98,8 +92,6 @@ function fetchFromTwitchInsights() {
 
 function fetchFromGitHub() {
     Promise.all([
-        fetch('https://raw.githubusercontent.com/arrowgent/Twitchtv-Bots-List/main/list.txt').then(checkPayload),
-        fetch('https://raw.githubusercontent.com/arrowgent/Twitchtv-Bots-List/main/goodbot.txt').then(checkPayload),
         fetch('https://raw.githubusercontent.com/paret0x/Twitch-Bot-Finder/main/botlist.txt').then(checkPayload),
         fetch('https://raw.githubusercontent.com/paret0x/Twitch-Bot-Finder/main/whitelist.txt').then(checkPayload),
         fetch('https://raw.githubusercontent.com/isdsdataarchive/twitch_ban_lists/main/follower_bot_list.txt').then(checkPayload),
@@ -169,24 +161,9 @@ function fetchFromFrankerFaceZ() {
         })
 
         printMessage("Finished downloading from FrankerFaceZ.")
-        fetchFromPaauulli()
-    })
-    .catch(err => printMessage(`Error while downloading FrankerFaceZ's list -- ${err}`))
-}
-
-function fetchFromPaauulli() {
-    fetch(`https://api.paauulli.me/bot/bots`, { method: 'GET', headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
-    .then(data => data.json())
-    .then(data => {
-        data.forEach(row => {
-            const name = row.Name.toLowerCase().trim()
-            addToList(name)
-        })
-
-        printMessage("Finished downloading from Paauulli.")
         beginScan()
     })
-    .catch(err => printMessage(`Error while downloading Paauulli's list -- ${err}`))
+    .catch(err => printMessage(`Error while downloading FrankerFaceZ's list -- ${err}`))
 }
 
 // gather the goods
@@ -222,8 +199,9 @@ function printMessage(message) {
 }
 
 // event handlers
-function onMessageHandler(channel, userdata, message, self) {
-    const name = userdata.username
+function onMessageHandler(payload) {
+    const { channel, user, message } = payload
+    const name = user.login
 
     if (safeList.includes(name)) return
     else if (notified.includes(name)) printMessage(`"${name}" is marked as a bot but they just sent a message.`)
@@ -235,4 +213,4 @@ validateToken(true)
 setInterval(validateToken, 3600000, false)
 
 client.on('message', onMessageHandler)
-client.connect().catch(err => printMessage(`Unable to connect to chat. ${err}`))
+client.connect()
