@@ -1,15 +1,12 @@
 
 // define configuration options
-const tmi = require('tmi.js')
+import tmi from '@tmi.js/chat'
 
 const cache = {}
 const focus = process.argv.slice(2)
 
 // create a client with our options
-const client = new tmi.Client({
-    identity: { username: "justinfan1986", password: "kappa" },
-    channels: [ "twitchplayspokemon" ],
-})
+const client = new tmi.Client({ channels: [ "twitchplayspokemon" ] })
 
 // our pretty printer
 function printMessage(message) {
@@ -17,10 +14,11 @@ function printMessage(message) {
 }
 
 // event handlers
-function onMessageHandler(channel, userdata, message, self) {
-    const name = userdata.username
+function onMessageHandler(payload) {
+    const { channel, user, message } = payload
+    const name = user.login
 
-    if (name === "tpp" || name === "tppsimulator") return
+    if (name == "tpp" || name == "tppsimulator" || name == "tppvr") return
     if (focus.length > 0 && !focus.includes(name)) return
 
     const currTime = new Date().getTime()
@@ -43,4 +41,4 @@ function onMessageHandler(channel, userdata, message, self) {
 
 // engage
 client.on('message', onMessageHandler)
-client.connect().catch(() => printMessage(`Unable to connect to chat. Please confirm your oauth token is correct.`))
+client.connect()
