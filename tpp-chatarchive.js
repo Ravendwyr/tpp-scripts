@@ -1,15 +1,13 @@
 
 // define configuration options
-require('dotenv').config()
-
-const fetch = require('node-fetch')
-const fs = require('fs')
+import 'dotenv/config'
+import fs from 'fs'
 
 const username = process.argv.slice(2)[0]
 
 if (!username) {
     printMessage("No username provided. Stopping...")
-    return
+    process.exit(0)
 }
 
 // our pretty printer
@@ -57,7 +55,7 @@ async function run() {
                 extensions: {
                     persistedQuery: {
                         version: 1,
-                        sha256Hash: '53962d07438ec66900c0265d3e9ec99c4124067ac3a9c718bc29b0b047d1e89c',
+                        sha256Hash: 'eb4e9869e1bb0b3ed553e1ed657fa09f8553781093569c3a5813ad09ee9c0776',
                     },
                 },
             },
