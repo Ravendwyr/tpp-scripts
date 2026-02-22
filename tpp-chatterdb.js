@@ -1,12 +1,8 @@
 
 // define configuration options
-require('dotenv').config()
-
-const { JsonDB, Config } = require('node-json-db')
-const userDB = new JsonDB(new Config('db-users', false, true, '/'))
-
-const fetch = require('node-fetch')
-const fs = require('fs')
+import 'dotenv/config'
+import { JsonDB, Config } from 'node-json-db'
+import fs from 'fs'
 
 // our pretty printer
 function printMessage(message) {
@@ -33,6 +29,8 @@ function validateToken(print) {
 }
 
 // build our databases
+const userDB = new JsonDB(new Config('db-users', false, true, '/'))
+
 async function addToDatabase(array, skip) {
     const user_id = array.user_id
     const user_login = array.user_login
@@ -41,7 +39,7 @@ async function addToDatabase(array, skip) {
 
     if (result == "user doesn't exist") {
         // new user to the database
-        userDB.push(`/${user_id}`, { "user_login": user_login, "time_in_chat": 0, "last_spoke": "", "last_seen": new Date().toISOString() })
+        userDB.push(`/${user_id}`, { "user_login": user_login, "time_in_chat": 0, "last_spoke": "", "first_seen": new Date().toISOString(), "last_seen": new Date().toISOString() })
     } else {
         // user exists in the database; update their time_in_chat, when they were last_seen, and check when they last_spoke
         if (!skip) userDB.push(`/${user_id}/time_in_chat`, result.time_in_chat + 5)
@@ -64,7 +62,7 @@ async function addToDatabase(array, skip) {
             extensions: {
                 persistedQuery: {
                     version: 1,
-                    sha256Hash: '53962d07438ec66900c0265d3e9ec99c4124067ac3a9c718bc29b0b047d1e89c',
+                    sha256Hash: 'eb4e9869e1bb0b3ed553e1ed657fa09f8553781093569c3a5813ad09ee9c0776',
                 },
             },
         }]
