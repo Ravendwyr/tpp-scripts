@@ -1,35 +1,51 @@
 
 // define configuration options
-const fetch = require('node-fetch')
-const imghash = require("imghash")
-const tmi = require('tmi.js')
-const fs = require('fs')
+import 'dotenv/config'
+import imghash from 'imghash'
+import fs from 'fs'
 
-// create a client with our options
-const client = new tmi.Client({
-    identity: { username: "justinfan1986", password: "kappa" },
-    channels: [ "twitchplayspokemon" ],
-})
+// our pretty printer
+function printMessage(message) {
+    console.log(new Date().toLocaleTimeString(), message)
+}
+
+// ensure our token is valid
+function validateToken(first) {
+    if (first) printMessage(`Validating OAuth token...`)
+
+    // https://dev.twitch.tv/docs/authentication/validate-tokens/
+    fetch(`https://id.twitch.tv/oauth2/validate`, { method: 'GET', headers: { 'Authorization': `OAuth ${process.env.TWITCH_OAUTH}` }})
+    .then(async data => {
+        if (data.ok) return await data.json()
+        else printMessage(`WARN    during .validateToken() - ${data.status} ${data.statusText}`)
+    })
+    .then(data => {
+        if (data.login && first) {
+            if (data.expires_in > 0) printMessage(`OAuth token is valid and will expire on ${new Date(Date.now() + (data.expires_in * 1000))}`)
+            else printMessage(`OAuth token is valid and but Twitch did not provide an expiry date.`)
+        } else if (data.status == 401) {
+            printMessage(`OAuth token is invalid or has expired. Please create a new one and update env file.`)
+            setTimeout(process.exit, 1000)
+        }
+    })
+    .catch(err => printMessage(`ERROR   during .validateToken() - ${err}`))
+}
 
 // throttle queries. we don't want to thrash the servers too much.
 const queue = []
-
-let previousName = ""
 let timer
 
 function addToQueue(name) {
-    if (queue.includes(name) || name == previousName || name == "tpp" || name == "tppsimulator") return
+    if (queue.includes(name) || name == "tpp" || name == "tppsimulator" || name == "tppvr") return
     else queue.push(name)
 
-    if (!timer) timer = setInterval(() => { if (queue.length > 0) getUserData(queue.splice(0, 1)[0]) }, 500)
+    if (!timer) timer = setInterval(() => { if (queue.length > 0) queryIVR(queue.splice(0, 1)[0]) }, 500)
 }
 
 // gather the goods
 if (!fs.existsSync("user_avatars")) fs.mkdirSync("user_avatars")
 
-function getUserData(name) {
-    previousName = name
-
+function queryIVR(name) {
     fetch(`https://api.ivr.fi/v2/twitch/user?login=${name}`, { method: 'GET', headers: { 'Content-Type': 'application/json', 'User-Agent': 'github.com/ravendwyr/tpp-scripts' } })
     .then(user => user.json())
     .then(user => {
@@ -40,7 +56,8 @@ function getUserData(name) {
 
         // download the user's profile pic
         fetch(user[0].logo)
-        .then(response => response.buffer())
+        .then(response => response.arrayBuffer())
+        .then(arrayBuffer => Buffer.from(arrayBuffer))
         .then(buffer => {
             if (!buffer) return
 
@@ -55,31 +72,30 @@ function getUserData(name) {
     if (queue.length == 0) timer = clearInterval(timer)
 }
 
-// our pretty printer
-function printMessage(message) {
-    console.log(new Date().toLocaleTimeString(), message)
-}
+function queryTwitch(cursor) {
+    let pagination = ""
 
-// event handlers
-function onMessageHandler(channel, userdata, message, self) {
-    addToQueue(userdata.username)
-}
+    if (cursor) pagination = `&after=${cursor}`
 
-function onJoinHandler(channel, name, self) {
-    addToQueue(name)
-}
+    fetch(`https://api.twitch.tv/helix/chat/chatters?moderator_id=44322184&broadcaster_id=56648155&first=1000${pagination}`, {
+        method: 'GET', headers: { 'Authorization': `Bearer ${process.env.TWITCH_OAUTH}`, 'Client-Id': process.env.TWITCH_CLIENTID },
+    })
+    .then(data => { if (data.ok) return data.json(); else printMessage(`Chatters endpoint returned Error ${data.status} ${data.statusText}`)})
+    .then(data => {
+        if (!data) return
 
-function onPartHandler(channel, name, self) {
-    addToQueue(name)
-}
+        for (let i = 0; i < data.data.length; i++) {
+            if (data.data[i].user_login != "") addToQueue(data.data[i].user_login)
+        }
 
-function onNamesHandler(channel, names) {
-    names.forEach((name) => addToQueue(name))
+        if (data.pagination.cursor) setTimeout(() => queryTwitch(data.pagination.cursor), 100)
+    })
+    .catch(err => printMessage(`Error while downloading chatter list -- ${err}`))
 }
 
 // engage
-client.on('join', onJoinHandler)
-client.on('part', onPartHandler)
-client.on('names', onNamesHandler)
-client.on('message', onMessageHandler)
-client.connect().catch(() => printMessage(`Unable to connect to chat. Please confirm your oauth token is correct.`))
+validateToken(true)
+setInterval(validateToken, 3600000)
+
+queryTwitch()
+setInterval(queryTwitch, 60000)
