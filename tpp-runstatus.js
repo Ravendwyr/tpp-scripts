@@ -1,9 +1,7 @@
 
 // define configuration options
-require('dotenv').config()
-
-const fetch = require('node-fetch')
-const fs = require('fs')
+import 'dotenv/config'
+import fs from 'fs'
 
 // check the time
 function getDateString() {
