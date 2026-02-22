@@ -58,11 +58,11 @@ $ node tpp-inputcheck name1 name2 name3 ...
 
 ## tpp-getusers.js
 
-Originally designed as a moderation aid, this script uses [tmi.js](https://www.npmjs.com/package/tmi.js) to query the Twitch API to download and save the userdata and profile pictures of ~~almost~~ everyone in the chosen channel's chat room.
+Originally designed as a moderation aid, this script uses Twitch's [Get Chatters endpoint](https://dev.twitch.tv/docs/api/reference/#get-chatters) to download the userdata and profile pictures of ~~almost~~ everyone in the chosen channel's chat room.
 
 User profile pictures are saved to `user_avatars/<username>-<filehash>.png`.
 
-The script checks users on inital boot, when a new message comes in, or when a user joins or leaves the chat and doesn't stop until terminated.
+The script queries the endpoint once every 60 seconds and doesn't stop until terminated.
 
 ```
 $ node tpp-getusers
