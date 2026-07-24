@@ -62,7 +62,7 @@ async function addToDatabase(array, skip) {
             extensions: {
                 persistedQuery: {
                     version: 1,
-                    sha256Hash: 'eb4e9869e1bb0b3ed553e1ed657fa09f8553781093569c3a5813ad09ee9c0776',
+                    sha256Hash: 'c44c124c9298aa34980415b6158d492ed1155a0f43580fe006f5e67289491f3d',
                 },
             },
         }]
