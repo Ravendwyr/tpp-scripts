@@ -10,14 +10,14 @@ function printMessage(message) {
 }
 
 // ensure our token is valid
-function validateToken(print) {
-    if (print) printMessage(`Validating OAuth token...`)
+function validateToken(firstRun) {
+    if (firstRun) printMessage(`Validating OAuth token...`)
 
     // https://dev.twitch.tv/docs/authentication/validate-tokens/
     fetch(`https://id.twitch.tv/oauth2/validate`, { method: 'GET', headers: { 'Authorization': `OAuth ${process.env.TWITCH_OAUTH}` }})
     .then(data => data.json())
     .then(data => {
-        if (data.login && print) {
+        if (data.login && firstRun) {
             if (data.expires_in > 0) printMessage(`OAuth token is valid and will expire on ${new Date(Date.now() + (data.expires_in * 1000))}`)
             else printMessage(`OAuth token is valid and but Twitch did not provide an expiry date.`)
         } else if (data.status == 401) {
@@ -31,7 +31,7 @@ function validateToken(print) {
 // build our databases
 const userDB = new JsonDB(new Config('db-users', false, true, '/'))
 
-async function addToDatabase(array, skip) {
+async function addToDatabase(array, firstRun) {
     const user_id = array.user_id
     const user_login = array.user_login
 
@@ -42,7 +42,7 @@ async function addToDatabase(array, skip) {
         userDB.push(`/${user_id}`, { "user_login": user_login, "time_in_chat": 0, "last_spoke": "", "first_seen": new Date().toISOString(), "last_seen": new Date().toISOString() })
     } else {
         // user exists in the database; update their time_in_chat, when they were last_seen, and check when they last_spoke
-        if (!skip) userDB.push(`/${user_id}/time_in_chat`, result.time_in_chat + 5)
+        if (!firstRun) userDB.push(`/${user_id}/time_in_chat`, result.time_in_chat + 5)
 
         userDB.push(`/${user_id}/last_seen`, new Date().toISOString())
 
@@ -95,7 +95,7 @@ async function addToDatabase(array, skip) {
 }
 
 // gather the goods
-function queryTwitch(cursor, skip) {
+function queryTwitch(cursor, firstRun) {
     let pagination = ""
     if (cursor) pagination = `&after=${cursor}`
 
@@ -107,11 +107,11 @@ function queryTwitch(cursor, skip) {
         if (!data) return
 
         for (let i = 0; i < data.data.length; i++) {
-            if (data.data[i].user_login != "") addToDatabase(data.data[i], skip)
+            if (data.data[i].user_login != "") addToDatabase(data.data[i], firstRun)
             if (i+1 == data.data.length) setTimeout(() => userDB.save(), 5000)
         }
 
-        if (data.pagination.cursor) setTimeout(() => queryTwitch(data.pagination.cursor, skip), 100)
+        if (data.pagination.cursor) setTimeout(() => queryTwitch(data.pagination.cursor, firstRun), 100)
     })
     .catch(err => printMessage(`Error while downloading chatter list -- ${err}`))
 }
