@@ -47,51 +47,57 @@ async function addToDatabase(array, firstRun) {
         userDB.push(`/${user_id}/last_seen`, new Date().toISOString())
 
         if (result.user_login != user_login) {
-            printMessage(`${result.user_login} has changed their name to ${user_login}`)
+            printMessage(`${result.user_login.padEnd(30, " ")} => ${user_login}`)
 
             userDB.push(`/${user_id}/previous_login`, result.user_login)
             userDB.push(`/${user_id}/user_login`, user_login)
         }
-
-        const body = [{
-            operationName: 'ViewerCardModLogsMessagesBySender',
-            variables: {
-                senderID: user_id,
-                channelID: '56648155',
-            },
-            extensions: {
-                persistedQuery: {
-                    version: 1,
-                    sha256Hash: 'c44c124c9298aa34980415b6158d492ed1155a0f43580fe006f5e67289491f3d',
-                },
-            },
-        }]
-
-        fetch(`https://gql.twitch.tv/gql`, {
-            method: 'POST', body: JSON.stringify(body), headers: {
-                'Authorization': `OAuth ${process.env.GRAPHQL_OAUTH}`, 'Client-Id': 'kimne78kx3ncx6brgo4mv6wki5h1ko',
-                'Client-Integrity': `${process.env.GRAPHQL_INTEGRITY}`, 'X-Device-Id': `${process.env.GRAPHQL_DEVICEID}`,
-            }
-        })
-        .then(async data => {
-            if (data.ok) return await data.json()
-            else printMessage(`GQL endpoint returned Error ${data.status} ${data.statusText} for ${user_login}`)
-        })
-        .then(data => {
-            if (!data) return
-
-            if (data[0]?.data?.viewerCardModLogs?.messages?.edges?.length > 0) {
-                let sentAt = ""
-
-                if (data[0].data.viewerCardModLogs.messages.edges[0].node.sentAt) sentAt = new Date(data[0].data.viewerCardModLogs.messages.edges[0].node.sentAt).toISOString()
-                else if (data[0].data.viewerCardModLogs.messages.edges[0].node.timestamp) sentAt = new Date(data[0].data.viewerCardModLogs.messages.edges[0].node.timestamp).toISOString()
-                else fs.writeFile(`dist/chatdebug-${user_login}.txt`, JSON.stringify(data, null, 4), err => { if (err) throw err })
-
-                userDB.push(`/${user_id}/last_spoke`, sentAt)
-            } //else fs.writeFile(`dist/rawchat-${user_login}.txt`, JSON.stringify(data, null, 4), err => { if (err) throw err })
-        })
-        .catch(err => printMessage(`ERROR fetching messages for ${user_login} -- ${err}`))
     }
+}
+
+function fetchTimestamp(array) {
+    const user_id = array.user_id
+    const user_login = array.user_login
+
+    const body = [{
+        operationName: 'ViewerCardModLogsMessagesBySender',
+        variables: {
+            senderID: user_id,
+            channelID: '56648155',
+        },
+        extensions: {
+            persistedQuery: {
+                version: 1,
+                sha256Hash: 'c44c124c9298aa34980415b6158d492ed1155a0f43580fe006f5e67289491f3d',
+            },
+        },
+    }]
+
+    fetch(`https://gql.twitch.tv/gql`, {
+        method: 'POST', body: JSON.stringify(body), headers: {
+            'Authorization': `OAuth ${process.env.GRAPHQL_OAUTH}`, 'Client-Id': 'kimne78kx3ncx6brgo4mv6wki5h1ko',
+            'Client-Integrity': process.env.GRAPHQL_INTEGRITY, 'X-Device-Id': process.env.GRAPHQL_DEVICEID,
+        }
+    })
+    .then(data => { if (data.ok) return data.json(); else printMessage(`GQL endpoint returned Error ${data.status} ${data.statusText} for ${user_login}`)})
+    .then(data => {
+        if (data && data[0]?.data?.viewerCardModLogs?.messages?.edges?.length > 0) {
+            let sentAt = ""
+
+            if (data[0].data.viewerCardModLogs.messages.edges[0].node.sentAt) sentAt = new Date(data[0].data.viewerCardModLogs.messages.edges[0].node.sentAt)
+            else if (data[0].data.viewerCardModLogs.messages.edges[0].node.timestamp) sentAt = new Date(data[0].data.viewerCardModLogs.messages.edges[0].node.timestamp)
+            else fs.writeFile(`dist/chatdebug-${user_login}.txt`, JSON.stringify(data, null, 4), err => { if (err) throw err })
+
+            if (sentAt != "" && sentAt != "Invalid Date") {
+                userDB.push(`/${user_id}/last_spoke`, sentAt.toISOString())
+            }
+
+            else fs.writeFile(`parsedb-sentatdebug-${user_id}-${user_login}.txt`, JSON.stringify(data, null, 4), err => { if (err) throw err })
+        }
+
+        //else fs.writeFile(`dist/rawchat-${user_login}.txt`, JSON.stringify(data, null, 4), err => { if (err) throw err })
+    })
+    .catch(err => printMessage(`ERROR fetching messages for ${user_login} -- ${err}`))
 }
 
 // gather the goods
@@ -106,12 +112,15 @@ function queryTwitch(cursor, firstRun) {
     .then(data => {
         if (!data) return
 
-        for (let i = 0; i < data.data.length; i++) {
-            if (data.data[i].user_login != "") addToDatabase(data.data[i], firstRun)
-            if (i+1 == data.data.length) setTimeout(() => userDB.save(), 5000)
-        }
+        data.data.forEach((entry, i) => {
+            if (entry.user_login) {
+                addToDatabase(entry, firstRun)
+                setTimeout(fetchTimestamp, i*80, entry)
+            }
+        })
 
-        if (data.pagination.cursor) setTimeout(() => queryTwitch(data.pagination.cursor, firstRun), 100)
+        if (data.pagination.cursor) queryTwitch(data.pagination.cursor, firstRun)
+        else setTimeout(() => userDB.save(), 1000)
     })
     .catch(err => printMessage(`Error while downloading chatter list -- ${err}`))
 }
