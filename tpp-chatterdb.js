@@ -124,7 +124,6 @@ function queryTwitch(cursor, firstRun) {
         })
 
         if (data.pagination.cursor) queryTwitch(data.pagination.cursor, firstRun)
-        else setTimeout(() => userDB.save(), 1000)
     })
     .catch(err => printMessage(`Error while downloading chatter list -- ${err}`))
 }
@@ -134,3 +133,4 @@ userDB.load()
 
 validateToken(true)
 setInterval(validateToken, 3600000, false)
+setInterval(() => userDB.save(), 60000)
