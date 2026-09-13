@@ -47,6 +47,7 @@ user_avatars/
 chat_data/
 
 # Output files
+archive/db-users.json
 db-users.json
 
 # TypeScript v1 declaration files

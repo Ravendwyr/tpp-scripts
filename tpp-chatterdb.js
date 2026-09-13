@@ -128,6 +128,12 @@ function queryTwitch(cursor, firstRun) {
     .catch(err => printMessage(`Error while downloading chatter list -- ${err}`))
 }
 
+// make a backup
+if (fs.existsSync('db-users.json')) fs.copyFile('db-users.json', 'archive/db-users.json', (err) => {
+    if (err) throw err
+    printMessage('Database backup saved to archive directory.')
+})
+
 // engage
 userDB.load()
 
