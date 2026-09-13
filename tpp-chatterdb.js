@@ -20,6 +20,10 @@ function validateToken(firstRun) {
         if (data.login && firstRun) {
             if (data.expires_in > 0) printMessage(`OAuth token is valid and will expire on ${new Date(Date.now() + (data.expires_in * 1000))}`)
             else printMessage(`OAuth token is valid and but Twitch did not provide an expiry date.`)
+
+            queryTwitch(null, true)
+            setInterval(queryTwitch, 300000, null, false)
+
         } else if (data.status == 401) {
             printMessage(`OAuth token is invalid or has expired. Please create a new one and update env file.`)
             setTimeout(process.exit, 1000)
@@ -130,6 +134,3 @@ userDB.load()
 
 validateToken(true)
 setInterval(validateToken, 3600000, false)
-
-queryTwitch(null, true)
-setInterval(queryTwitch, 300000, null, false)
