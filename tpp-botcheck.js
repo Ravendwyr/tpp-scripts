@@ -135,6 +135,7 @@ function fetchFromGitHub() {
         fetch('https://raw.githubusercontent.com/Maouniel/temp/main/TwitchChatFilter/.bots.txt').then(checkPayload),
         fetch('https://raw.githubusercontent.com/nugrunonly/banBot-v2/main/binarybouncer-main/banlist.txt').then(checkPayload),
         fetch('https://raw.githubusercontent.com/Twitchmods/hateraid-master.txt/main/Hater%20Master.txt').then(checkPayload),
+        fetch('https://raw.githubusercontent.com/IanDLive/ClangNet-Suite/refs/heads/master/addons/ignorebots.txt').then(checkPayload),
     ])
     .then(data => {
         // 'data' is an array and its .length is equivalent to the number number of queries in .all() above
