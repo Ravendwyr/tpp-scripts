@@ -30,8 +30,8 @@ async function run() {
                 'Client-Id': 'kimne78kx3ncx6brgo4mv6wki5h1ko',
                 'Authorization': `OAuth ${process.env.GRAPHQL_OAUTH}`,
                 'Content-Type': 'text/plain;charset=UTF-8',
-                'Client-Integrity': `${process.env.GRAPHQL_INTEGRITY}`,
-                'X-Device-Id': `${process.env.GRAPHQL_DEVICEID}`,
+                'Client-Integrity': process.env.GRAPHQL_INTEGRITY,
+                'X-Device-Id': process.env.GRAPHQL_DEVICEID,
             },
             body: JSON.stringify(body),
         }
