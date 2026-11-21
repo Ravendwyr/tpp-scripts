@@ -17,6 +17,6 @@
     "@tmi.js/chat": "0.8.0",
     "dotenv": "18.0.10",
     "imghash": "1.1.5",
-    "node-json-db": "2.6.0"
+    "node-json-db": "2.6.2"
   }
 }
